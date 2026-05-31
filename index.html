@@ -3,9 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Psicopé">
+<meta name="theme-color" content="#6B9E70">
 <title>Agenda Psicopé</title>
+<!-- Favicon para el tab del browser -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OCIgZmlsbD0iIzZCOUU3MCIvPgogIDx0ZXh0IHg9IjUwIiB5PSI3MCIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsc2VyaWYiIGZvbnQtc2l6ZT0iNjgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UDwvdGV4dD4KPC9zdmc+">
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABp0lEQVR42mNkIANkzyv4j0tuatIERlLMYqSGpZQ4hpEWFpPiECZaW07IHEZaWkxMaDDR03Js5jMxDDBgoqfvsdnDSIzlnL/YH3Wnd8jhkv/z58/fFy9fvD198cyjo0+OS/5g/SVNbHpgIUbhd7afcjnzCxl0ObROpkemmjMwMDC8evXqXdPWdiH236wvnBUdnnu5ehnKSMuIuX5x+da2tPP2J7YvqkRHASVB/5P1t8SOR3u0nr94/oaBgYGBh4eHK8wqhJHYqKBKIvzH9J/90rXLT2B8A119FaZ/TN9IToQUpWYmRlRf//9PVCgwUSPlM/5j/KGnqScD41+4dOHOP+b/nHQJAfbfrC+8FFyvi4uLCzMwMDB8+fLl28oTa4j2FAu5FouJiQlNSexnYGBgkPj796/o02dPX52+eObxkUfHJX6w/VSluQNg2RDKZWZgYBBjYGAQY2CjoCQc8KJ4RDqAkZiSkFBdkDe36Oc/pv/sNHPA8E8DpDalqdk8Gzy5gN6hALOPiZJeDTVaxoOvIKJ1KKCbz0iPnhE+jzFR2rmktG844L1jANFstXw78SQTAAAAAElFTkSuQmCC">
+<!-- Ícono para iOS (Agregar a pantalla de inicio) -->
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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">
+<!-- Manifest para Android PWA -->
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIkFnZW5kYSBQc2ljb3BcdTAwZTkiLCAic2hvcnRfbmFtZSI6ICJQc2ljb3BcdTAwZTkiLCAiZGVzY3JpcHRpb24iOiAiQWdlbmRhIGFjYWRcdTAwZTltaWNhIGRlIFBzaWNvcGVkYWdvZ1x1MDBlZGEgVUUiLCAic3RhcnRfdXJsIjogIi4iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiAiI0ZERkFGNiIsICJ0aGVtZV9jb2xvciI6ICIjNkI5RTcwIiwgImljb25zIjogW3sic3JjIjogImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBTUFBQUFEQUNBWUFBQUJTM0d3SEFBQUp3a2xFUVZSNDJ1MmRmMHlVOXgzSHY4K1hlL2h4QitXWElDS2dJQ2pVV1FWci9WRVI2YVN0MERIUldjbCtXS3ZPcFNNd3NjYjFqeVhHcnMweWszWWFiV0s2Mk5Rc0djbDBiY2Jxckk3b1dsTlhxMTFsb29KbGloZzRPWXFIMStPQXU0UGJ2MmExM1p3ODhEejNmYjBTL3pMNTNuT2Y1LzM2Zmo3ZkI3Z1RBZ0FBQUFBQVZFS2pCTVpSODliVzBGaXQ5Y2JHUGR3ckJBanZrQ01IQWhCMnBFQUFBbzhRQ0VEb2tRRUJDRDB5SUFEQlJ3UUVJUFRJZ0FBRUh4RVFnT0FqQWdJUWZFUkFBSUtQQ0FoQThCSGhBWkNFSDFTdXU4WU5BSlc3Z1Vid1FXVVJKT0VIbGUrUHBMaWc4bjNTS0Npb1BCSkp3ZzhxM3o5SjhVRGwrNmhSTUZCNUpKS0VIMVMrdjVMaWdNcjNXVklVVVBsK1M0b0JLdDkzU1JGQTVmc3ZDVCtvTElFay9LQ3lCSkx3ZzhvU1NNSVBLa3NnQ1Qrb0xJRWsvS0N5QkpMd2c4b1NTTW9NS2lQRHdXS2dDNWhTQU1JUFpzK1JKUHlnc2dTY0FZQXpBTHMvcU5vRkpPRUhsU1dRaEI5VWxvQXpBSEFHWVBjSFZidUFUYVdpN2FqY0pyS1NNeTEzM2FGUVNBUkhneUl3RWhEK1lFQjRCNzNDTStnUmQzeDNSSStuVnpqZFR0SGxkb3IrZ1g3TXVFODBNOW1JQUE5R242ZHZwTjExTGFLMXUwMWM3R3dSUTRIaHNBL3dnMzdPa0taSytGVVE0Rzc4QWY5b1MrZWwwVFB0WjIydDNXMUl3QWlrRnBGNnBDeWFVU2lMWmhTS0R1ZU5nVk50SHpnK3ZmNFpoUm5MUXpBSFgyc3dmY28weC9QTDE0dWFraTN1YVpPeU9CQ1BsUUJnTFFweUNoSzNsZGVObG1ZdjY1R1NXLzlBQXJEN1c1T0lpQWk1Wm5uVjVNMExOemp0a2ZZUjFidUFVdHZBN3NiWFJXcjI1RldhcHVWKzA3LzYrdnBYeC9xMWEydHJkOTNydGFTVWViR3hzWE15TWpJZUx5NHVycTZycTN2NXlKRWo3dzhNREF3YVdZdEg4dWRNZVdIcGozdmpaR3kveWh1Q05wNjJXWVhTMlNWaXpXT3J4bHlBZjdvdjVjejU5dHdmZmVVL1F5SVU4QWVHL0w1aGorY0x6ODNlRzY3TDdzN2JGMHFMU3BLM3Y3ajkrYXlzckhTajN1dXRXN2Y2ZnYzdWE4T0I2R0I2T055NyszMGl4Rk1nYzJ4RG1oNmx4K2hSZW93ak1YYnlsTHowUjRVUTYvMys0T0NXWFQ5cFhGbjQ5R2hkVFYyMXBtbGovdG42YVdscHlUOWRzYVZ6ejRuOVRzMHVwM0FHWVBZM0RiWklXMHp1MHZ4MVYvVDJWZlc3WG54bmNIQnd5SWpYeWN2THkzb205K21PSWUrUTVjZWgrODBuandJc0lrSndXbWpOTHcrK2VzWHY5d2VNZUkyVlQ2MWNuT1pKUGtvSFlQYzNMUjdIUU9HYmYvcHRwMUhyYjN0aFc4V05UNjcvVWFVdVFBZXdHSzNlOWhrZmZucTZ5NGkxazVLU0VrcG5MaHNZOWcxNzZBQmdXdjc2cjVOVC9YNS8wSWkxTjIzY1ZIVzU2ZUpCQkdEOE1TM3VnWDd4MFpVemZpUFdqbytQajNzNE5iOC82QThPV3JsRy8ydGU2UUFXNWVPT2MzYWoxcTc2YmxWcCs3bXJmNkVEc1B1YmxxN2IzY0xWMzJ2SUU2R1NrcEtGSFo5ZFA2SENZWmdPWUdFKzcyblhqVmpYNFhERXBObFR2YU1qbzhGd3J5RUNXSmpPdnB1R3JaMlhtNWZSZThOMVNYa0JHSC9NUzYrbjE3QzFaODJhbGUxMjNtNFA5ekdJRG1CaDNBTjNERnM3SlNVbDJlMTBYMmNFQXRQaUR4cjNSKyt4c2JIMm9TOTlmVW9Md1BoamJnSWp4cDFSbzZPam93TERBVjg0MU9tYmNrd0hzREI2aEc3WTJqNmZiekFZR0FuN3oxVkJBQXNUclVjWnRyYlg2L1haSW0weENBQ21KZEdSYU5qYVRxZlRwVWZyZG1VRllQNDNQNVBqVXcxYisrclZxeDJPZUVkcXVOVHE2L0pNQjdBd1daT00rNVM3eTVjdmY1NlFsamlkRVFoTWlTWTBrWjgrMDVDMTNXNzNuZWJtNXRiRTlLUThCQUJUa3AwNlhjVGI0dzFaKytUSmszL1hZL1M0U1prcCtRZ0FwcVE0ZjRsaGF6YzBOTHlYa1orNVdOTTBxYVFBSElETmYvaWRuMU5reU5vOVBUMWZORFkyTnVVdHluOG0zT3AycjF6VEFTekk5eGF1RnRLZ3pYbnYzcjF2NnpGNlF2YThuQlVxMUJJQkxFYnA3QkpSTUhXV0lXdDNkWFgxN05tejUrMUh5Z28zeUFocFF3QXdGWE95dmlXcUZsUWF0bjU5ZmYwck1qb2lmbTVaNFFaVmFvb0FGdUhSbkNLeHVYU0RZYVBQb1VPSDNqbDgrUEN4cGRVbHY3QkYycUpWcVN1ZkRXcHlvdlVvOFozNUZhS2tvTml3MXpoLy92ekZtcHFhbmZtUFA3dzZkMEhlU3BYcWl3QW1KVXFQRW92ekZvcXlPVThZOXJ4ZkNDSGEyOXR2bEplWGIzS2t4T1l1KzJIcEx0WHEvQlVCZUFRNnZtaENFN3BORi9iSUdKRWNseXd5a3pORWJ0b01NVHVqd05CZmR4WkNpQXNYTGx3cEx5L2Y1TmNDY1d2cTF4M1VvL1N3LyszUG1yZTJodTcrQ0hVNndEaXhiOSsrbldhNm5tUEhqbjFRWFYzOXM4aUVxTXpWTzlZZWpJbUxTVkx4dm5BSVZneS8zeC9Zdm4zN3J5b3FLalluVGt1YVgvWHp0UTMyTVBxdFQ4NEE4TFUwTlRWOXRIWHIxbGRhMjFvN2xqeTc5S1Y1VDg3ZktEU2hxVndUT29BQ25EMTd0cm15c25KTFdWblpjNTdRbDZuUDd2eCs0N3luNW05U1BmeDBnRERHNi9YNkdoc2JtdzRjT05Cdyt2VHBjNU56MHVaVzFGVytPWDFlemhOVUJ3SENrbXZYcnQwOGRlclV4OGVQSC8vdzZOR2pmd3VNQkxUc3doa3JxbDVhMjVBK2Mrb0NLb1FBbGlRVUNvV0doNGY5UTBORHd6NmZiOGpsY3ZVNW5VNVhkM2UzcTYydDdWcExTOHZWNXVibUs5M2QzYTZIVXVJek0vSXpGaFUvVjdwNyt0enM1U3I4WVRzQ1dJRGEydHBkKy9mdi85My92WUFtdEFpYkxkS21SMFRaSW0zUk1RL1preDN4amxSSGdpTTFZVXJTb3FKMWo2MS9Nak9sd0pHZzdoTWRCREE1eTM1UXV2T2UzeE1NRXdaUGdRQUJBQkFBQUFFQUVBQUFBUUFRQUFBQkFCQUFRQTBCN3Y1ek1ZQnc0ei96VFFjQU9nQUFBZ0FnQUFBQ0FDQUFnTElDOENnVXdwRjc1Wm9PQUhRQUFBUUFRQUFBQk9BZ0RFb2NnT2tBUUFlZ0JJQUFBSXJ5WCtmOGNQcktwQjJWMjBSV2NxWmxydmU5Znh3VDd6ZWZJS1VHemY5MEFKTno5dDB6dnpuLzUwL2VvQktNUUFBVEl3Q1BReUZjeHg4NkFOQUJLQUVnQUdNUUtEaitDS0hZRjJUc2JueGQvT0hsMzYvcTdYQzFXT1dhRjFZdHFTZkt4bkZmTzNzNC9Vd0EyUDA1QXdCbkFFb0FDRERHYlFYQUN1TVBIUURvQUViYUJXRG0zWjhPQUhTQThiQU13SXk3UHgwQTZBRGphUnVBbVhaL09nRFFBU2JDT2dBejdQNTBBS0FEVEtSOUFCT2RQMm1HaXdDWXFOd3hBZ0VqRUYwQVZOejk2UUJBQnpDamxRRGpsVE5wNW9zRE1EcGYwZ29YQ1dCVXJqZ0RBR2NBdWdDb3VQc2IzZ0dRQU15ZUkybmxpd2ZDenhrQXdPd0MwQVhBckxtUjRmUm1nUENiZWdSQ0FqQmJUbVE0dnprZy9LWThCQ01CbUNVWFVxVTNDNFRmTkFJZ0FaZ2hCMUxsTnc5cWg5OFVBaUFCNFZkZUFDUWcvTW9MZ0FTRVgza0JrSUR3anplbURodmZTa253bGVzQWRBUENqd0JJUVBnWmdSaUpDRDRkZ0c1QStCRUFDYmcvakVDTVJBUWZBUkNCNENzK0FqRVdVWGM2QU4yQTRDTUFJaEI4QkVBRWdvOEFpRUR3RVFBUkNENENJQU9oUndCRUlQZ0lnQXlFSGdHUWdkQWpnSnBDRUhnRVVFWUt3bzRBWVM4SElRY0FBQUNBTWVMZlJrRFBZWmZVdFYwQUFBQUFTVVZPUks1Q1lJST0iLCAic2l6ZXMiOiAiMTkyeDE5MiIsICJ0eXBlIjogImltYWdlL3BuZyJ9LCB7InNyYyI6ICJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQWdBQUFBSUFDQVlBQUFEMGVOVDZBQUFkMFVsRVFWUjQydTNkZVdDVjViMG44T2RrMzBrZ1FCQVFFcEFkRVFTeFNsM0JmZWxpcTF5dkhZdlZWbTBkYTIzcjFldU1YcXUybmVtTVYrM2U2c1hxdExhMlZxMWF0ZFZhTGRhbFdFVEZzSVY5QzBzSTJaTnpjditZb2FNUk4wemdKTS9uODAvSlNjQytUMzd2OC91K3YvYzlTUWdBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFFQjNTbGdDNk4wdXZlUHl6djMxMy83dXZGdnNJU0FBQUwyOW9Rc01JQUFBbXJ4d0FBSUFvTWtMQnlBQUFKcTlVQUFDQUdqMkNBVWdBSUNHajBBQUFnQm85Z2dGSUFDQXBvOHdBQUlBYVBnSUJDQUFnS2FQTUFBQ0FHajRDQVFnQUlDbWp6QUFBZ0JvK2dnRElBQ2c4WU1nQUFJQW1qNElBeUFBb09tRE1BQUNBQm8vQ0FJSUFLRHBnekNBQUFBYVB3Z0NDQUNnOFlNZ2dBQUFtajRJQXdnQW9QR0RJSUFBQUJvL0NBSUlBR2o4Z0NDQUFJREdEd2dDQ0FCby9JQWdnQUNBeGc4SUFnZ0FhUHlBSUlBQWdNWVBDQUlJQUdqOGdDREFYc3V3QkdqKzRMekZCQUJzSUdBYWdBQ0F4ZzhJQWdnQWFQeUFJRUNmNEJrQU5IOXd2bU1DZ0kwQU1BM0FCQUROSDdBUFlBS0FFeDR3RFVBQVFPTUhCQUY2S2JjQU5IOEErNFVKQUU1a0FOTUFFd0EwZjhBK2dna0FUbGpBTkFBVEFEUi93UDZDQUlDVEU3RFAwRnNZNXpnaEFmYUtXd0ltQUdqK2dQMEhBUUFuSDJBZkl0MFozempoQUxxRld3SW1BR2orZ1AwSkFRQW5GMkNmSXQwWTF6aWhBSHFFV3dJbUFHaitnUDBMQVFBbkQyQWZRd0RBU1FQWXo5am4zSjl4b2dEc001NExNQUZBOHdmc2N3Z0FPQ2tBK3gwQ2dKTUJ3TDZIQU9Ba0FMRC9JUUFvZmdEN0lCK1NwekVWUEVCYThBNEJFd0ROSDhEK2lBQ2d1QUhza3dnQWlockFmb2tBb0pnQjdKc0lBSW9Zd1A2SkFLQjRBZXlqQ0FDS0ZzQitpZ0NnV0FIc3F3SUFpaFRBL2lvQW9EZ0I3TE1DQUlvU3dINHJBS0FZQWV5N0FvQWlCTUQrS3dBb1BnRHN3d0tBb2dQQWZpd0FLRFlBN01zQ2dDSUR3UDRzQUNndUFPelRBb0NpQXNCK0xRQUFBQUtBTkFtQWZWc0FVRVFBMkw4RkFNVURZQiszandzQWlnYkFmbzRBb0ZnQTdPc0NBSW9Fd1A0dUFBQUFBb0IwQ0lCOVhnQlFGQURZN3dVQXhRQ0FmVjhBVUFRQTJQOEZBQUJBQUpEK0FOQUhCQURmZEFEMEF3SEFOeHNBZlVFQUFBQUVBQ2tQQVAxQkFQRE5CVUNmRUFCOFV3SFFMd1FBQUNEeUFPRHFId0I5STdJQW9Qa0RvSDlFRmdBMGZ3RDBrVWduQUFCQVJBSEExVDhBK2tsa0FVRHpCMEJmaVhRQ0FBQkVGQUJjL1FPZ3YwUVdBRFIvQVBTWlNDY0FBRUJFQWNEVlB3RDZqUWtBQU5EWEE0Q3Jmd0QwblE4bTRadkF2amFncUgrNC9sUFhXb2hJcERwVElaVktoVlJuS2lSVHFkQ1I2Z2h0N2EyaHRhTXR0TGEzaHBiMjF0RFkyaGdhV3h0RFEwdGphR2hwQ0hWTk84T094aDJocnJFdU5MUTBXa1RTMW5mbjNkSnIrMmlXYngvUWt6SVNHU0Vqczh1d01hL29mZi85OW1SN3FLM2ZHcmJzM0JLMjFOZUd6VHUzaFBVN05vU05PemFGWkNwcGdTSEdDWUNyZnhNQTRwVk1KY09tdXMxaDdiWjFvYVoyVlZpeHVTWnNydHNjT29OdEFWT0FQaDBBTkg4QkFMcHFhbXNLS3piWGhEZldWNGMzTmxTSHpUdTNXQlNFZ0hmZ0ZnRFFaeFRrRklUSnd5ZUd5Y01uaGhCQzJONndJN3k2OXJYdzk5V3ZoT1diVm9SVVo4b2lRVytlQUxqNk53R0FENnFocFRHOHNtWnhlSDc1aTJIbDVocTNDb2grQ21BQ0FFU2hLSzh3SERIbThIREVtTVBEMWwzYndndkxYd3dMbGowZjZocnJMQTRtQUs3K01RRWdKcWxVS2l4YXN6Zzh2ZVNac0h6VENndENWRk1BRXdBZ1doa1pHV0hxeUNsaDZzZ3BZZTIyZGVHeFJVK0VSYXNYdXoyQUNZQ3JmMHdBaU0ybXVrM2g5NHVlQ0g5YitiSWdRSitlQXZTYUh3V3MrUVA3UWtWcFJUai82UFBDMTg2NElvd2RNc2FDMEdmN2xWOEdCTEFId3djTUMxODY2ZUx3aGRrWGh2TGlBUmFFUHFkWEJBQlgvOEQrTW1uNGhIRE54NjhLSng5eVFzaks5TmdVZmFkdm1RQUF2SWZzekt4dzZ0U1R3MVZuWEJrT0xCOXVRVEFCa0tLQW1GU1VEZzVYbm5wNU9IWHFTU0Vqdy9VVHZidC9xV0NBRDdKcFptU0Vrdzg1TVh6NTVDK0Zzc0pTQzRJSmdLdC9JQ2FWZzBhR3E4NjRNa3dZTnQ1aTBDdjdXTUxDc2IvdDJscS83cTZ2M1hGTVQvMzczL2pHTjY2NDVwcHJMdW16amFpeThwaFZxMWF0K3hCWHRCbUZoWVg1aFlXRkJZV0ZoZmtGQlFYNVE0WU1HVmhWVlhWZ1ZWWFY4S3FxcXVIanhvMGJOV0hDaE5HSlJDS2hZdCtxczdNelBMVHc0ZkQ0SzMrMEdPeFJ1djVjZ0xSOXBGWHpoMzBqbFVxbGR1M2ExYmhyMTY3RzNhOHRYcnk0dXV2WGxaV1Y5WnMxYTlhaHMyYk5tbjdzc2NjZVBtUEdqSU90WGdpSlJDS2NjZWhwWVZESndNNmZML2hWSXBsS1doVGUxcy9TTVFSNFR3dnd2dXpZc1dQblF3ODk5T1JERHozMFpBZ2hWRlZWRFo4N2QrN3BjK2ZPUFgzaXhJa0h4YjQraHg4ME05RXZyMS9iVDU3K2o1elc5bFlGUTlwTHkyY0FYUDFEK2x1NWN1WGFHMis4OFh1VEprMDZlZWJNbVo5ODhNRUgvOWpaMlJuMXVUdCsrTGljeng5MXdhNkMzQUlGUXRyM3RZU0ZvcTg3ZmRvcDRjUXBjL3JzOFhWOUJ1QXozNTczcCtMeWttRjcrKzkxZG5hbU9scmJtOXRiMjV2YVd6dWFPOXJhbTV0Mk50YnVyTjI1cG43THpyWDF0VHZYN3RpMFk4WDJEZHVXZC8xaCtaTW5UeDU3OWRWWFgzejIyV2VmR3ZQekFpdldyTmorNDcvOFIvK0dsZ1luSVArUWJyY0IwdTRFMWZ3UkFQWnZBSGkvV2h0YmQyNWN0djV2RzVkdGVHbmRHMnYvdXFWbTh5dTdQM2ZFRVVkTSs5R1BmblJqekxjR2xpeGRzdUVuZjUwL3FEWFo2bFlyYVJrQ0ZDYXdWM0lMYy91TlBLVHF1SkdIVkIwWFFnajF0VHZYTG4yKytxRmx6MWMvdEdEQmdvVlRwMDQ5L2F0Zi9lcUYxMTU3N1Jmejh2SnlZMXVmOFdQR0h6QzM4VlBMN3ZyYlBVTlRtWjN1Q1pCMjB1b1pBRmYvMEh1VkRPdzNmUHBwaDEweTk0YnpIajNyMm5OK1BXemk4S052dXZtbUg4eWNPZk9UTlRVMTYySmNrK2xURHozbzFKRW52dGJhMUZxblFraTNQdWNuQVFMZGJuQmx4WlJUTGp2amgrZGMvOCsvYTg1dkhUMTl4dlNQL2VFUGYvaExqR3R4NHV3VFowek5tZnhVODY3bTdTb0RFd0JYL3hDRkFjUEt4NTd3K1pOdk9mYnpjMzcwVHhlY2U5UHR0OS8rc3hqWDRaSUxMLzU0MGRxOHU5dWFXM2VwQ3RLbDM1a0FBRDJ1WXZTUWFXZGRlODREOXp6MTg0Wi92L1hXdTJKY2cyLysyODBYTFh2NGpldmFXOXViVlFRQ2dLdC9pR2V6eWN6SU92UzB3eTcrYTkyTGgzM3ZoOSs3TDdiano4L1B6L3ZlLy96dUpYKzU2K212ZDNaMnBsU0VLWUFBQUVSbHdQRHljUXZiRjgrKys5NjduNHp0Mk1lUEh6L3E0bk8vY05pQ1h6N3pUWldBQUFCRUo2OHdyL1Q1cG9WSHYvVEszMWJIZHV5WFhITEp1ZjFhaWw5ZDh1eHI5NmtFb2c0QXh2OFFwODdRbVhuZmE3OGRzYWwyYzMxTXg1MUlKQkkvL2VsUHYvbkNmYy9kdkgzOXRxVXFJVjc3dS8rWkFBRDdUVU5MUTVqLzNOMGxiZTF0VWYwS3ZWR2pSaDE0K1dXWC8vUHZ2L2Z3bHp3VVNKUUJ3TlUvc0hiYnV2REVxMy9Nak8yNHI3cnFxaThVWk9RM1BQZXJaNytsQ2t3QlRBQ0FLRDMreWgvRGhoMGJvcm9nS0N3c3pML2hoaHUrdlBpcFJmZHNxRjczZ2lvZ21nRGc2aC9ZTFpsS2hudWV2VGVSaXV6ZGNlZWRkOTdIUjFXTkd2N2tuVTljbFd6dmFGVUpwZ0FtQUVCMFZtOWRFNTViK254VXg1eVZsWlY1N2JYWGZuSG5scDFyWHY3OXdwK29BZ1FBSUVxL1gvUjRTS2FpZWg0d25IdnV1V2NPR3phc1l1RWpMLzZnY1VmRFpsVkFudzRBeHYvQW51eG9yQXQvV2ZyWDZLWUFGMTk4OGJudHJlM056OS8vM1A5V0JYSGFIMzNSQkFCSUs0OHZlaUowSkR1aU91WUxMN3p3N056YzNKenFCVXZ1MzdsbDV4cFZRSjhNQUs3K2dYZFQxN1F6TEZ6MTk2aU9lZURBZ2YzUFBQUE0yYWxVS3ZuU1E4L2ZyZ3BNQVV3QWdDZzlGOWx0Z0JCQ09PKzg4ejRXUWdoTG4zdmpnWVlkRFp0VUFRSUFFSjFsbTFhRTJ2cmFxSTc1eEJOUFBLcTh2THdzbFVvbFgzM3FsWHRVQVgwcUFCai9BKzk3Q3JBc3JyY0VabWRuWjUxeHhobXpRd2poOWFjWDM1dnNTTGFwZ3Zqc3l6NXBBZ0NrcFlVMWY0L3VtRTg3N2JSalF3aWhlVmZ6OXBxWFYveEJGU0FBQU5IWnVtdGJxSzNmR3RVeHo1a3paMVpPVGs1MkNDRlVMMWp5VzFWQW53Z0F4di9BQi9YNitpVlJIVzlSVVZIQnpKa3pEd2toaERXdnJ2NXpTMFB6RGxVUW4zM1ZMMDBBZ1BRTkFPdVdSSGZNSC8zb1I2ZUhFRUlxbWVxb2VYbWwyd0QwN2dEZzZoL1lHOHMyclFpeC9ZS2dXYk5tVGQvOTUxV0xhcDVTQmFZQUpnQkFkTm82MnNLV25YRzlIWERtekpsVGR2OTU3V3VybjAxMkpOdFZBZ0lBRUoxMTI5ZEhkYno5Ky9jdkhUcDA2T0FRUW1odmJXL2F2SExUMzFVQnZUSUFHUDhESDhiYWJldWlPK2JKa3llUDNmM25qVXZYdjZRSzR0VFQvZE1FQUVqdkNjQzI5ZEVkODZSSms4YjhJd0FzMnlBQUlBQUE4ZG02YTJ0MHgxeFpXVGw4OTU4M3I5eTBTQlhRNndLQThUL3dZZFUxN1F5ZElhNnRaT1RJa1VOMy83bWxzYVd1Y1VmRFpwVVFwNTdzb3lZQVFGcExwcEtob2FVeHFtTWVNV0xFMERkL3ZHM2QxbXFWZ0FBQVJHZG40ODZvam5mdzRNSGxid2tBNjdjdFZRVUlBRUIwNnBycW9qcmVzckt5a2tRaWtkajljZjNXK3JXcWdGNFRBTnovQjdwTFMzdHJWTWVibVptWjJhOWZ2K0xkSCsvYVdyOWVGY1NycC9xcENRQ1E5dG9qL0dGNEpTVWxSZjhJQU5zRUFBUUFJTVlBMEJGZkFNak56YzNaL2VlbW5VMWJWUUc5SWdBWS93TW1BQjlPVGs1Tzl1NC90emExMUVmM1hraDZ2SythQUFCcHI2MGo3Z0RRbWVwTXRqYTM3bElKQ0FCQVZESXo0dHVxVXFuVVc2NzQycHJiR2xRQ0FnQVFsZXpNN09pT3VhMnRyZTNOSHljN2ttMHFnYlFPQU83L0E5MGVBTEtpREFCdnVlK1I2b2p3UVFoNnRMK2FBQUFtQUdtb3VibTU1UzBUZ0tRQVFKcFBBQUFFZ0E5disvYnRiL241eDIvK3lZQ1FkZ0hBK0Ivb0NVVjVoVkVkYjFOVFUzTkxTOHRiZnZ4aFpsWm1qa3FnTy91c0NRQ1E5a29MUzZNNjNtM2J0dFc5YmJQT2pIQU1RdStaQUFEMFNBQW82QmZWOGE1ZnYzNXoxOWV5Y3JMeVZBSUNBQkNOZ3B5Q2tKTVYxL1I3OWVyVmIvdlovM21GdWYxVUF3SUFFTS9WZjJGOGZXL1ZxbFhydWx6OTUyZG1aK1dxQnRJeUFIZ0FFT2dKRmFVVjBSM3o4dVhMVjcvbDZyOG92MVFsME4zOTFnUUFTR3ZEK2crTjdwZ1hMMTVjL2VhUEM4dUtCcXNFMG5ZQ0FOQVRoZytJS3dCMGRuWjJ2dmJhYTh2ZS9GckpnT0toS2dFQkFEQUI2TU9XTDErK3VxR2hvZW5OcnhXWGx3eFRDYVJsQUhEL0grZ0paWVdsb1RpL09LcGpYckJnd2NLdXIvVWJWRHBDTmREZGZkY0VBRWhiNDRlT2krNlluMzMyMlplNnZqWmdXUGxZMVVCYVRnQUFlc0tFQ0FQQU04ODg4OVlBa0FpSi9rTUhIS1FhRUFDQU9EYW5qSXd3OW9BeFVSMXpUVTNOdXVycTZwVnZmcTEwVU9tSTdOenNBaFdCQUFCRW9YTGd5SkNma3gvVk1mL3VkNzk3c3V0ckZhTVBtS1lhU01zQTRBRkFvQ2NjTm1wNmRNZThwd0F3NUtBRHBxc0dlcUwvbWdBQWFTY25LeWNjV2pVMXFtT3VyYTNkL3VTVFR6N1g5ZlVEeGd3VkFFalBDUUJBZDVzNmNrckl5NDdybDkvZGUrKzlEM2QwZENUZi9GcEplY213MG9xeUtoV0JBQUJFNFlneGgwZDN6RC83MmM5KzIvVzFrWWRVSGFjYUVBQ0FLRlFOcWd5akJzZDEwZnZ5eXkrLy9zSUxMeXg2V3dDWVVpa0FrSjRCd0FPQVFIYzdkZHBKMFIzemJiZmRkbGZYMS9LTDgvc1BIVC84SXlxQ251ckRKZ0JBMmhnMXVDcU1IUkxYZS85cmEydTMvL3puUDMrbzYrdWpEeHR6YWtaR1JxYXFJQzBuQUFEZDZmUnBwMFIzek4vNXpuZCsydExTMHRyMTliRkhqUCtZaWtBQUFQcThtYU5uaE5FVm82STY1cTFidCs2NC9mYmIzemIrSDNqZ29BbURLeXVtcUFvRUFLQlBLODRyQ3A4OExMNEwzbTk5NjFzL2JHeHNiTzc2K3VUWlV6NmpLaEFBZ0Q3dlU0ZC9JaFRreHZYajdsZXNXTEhtMWx0dm5kLzE5ZnppL1A1alpvNDlYVlVnQUFCOTJ2U3FhV0ZhNWRUb2p2c3JYL25LVFcxdGJlMWRYei9reEVNdnlNek95bFVacEcwQThCWkE0TU1hMW45b09IZldPZEVkOTZPUFB2cjBBdzg4OElldXIrY1Y1WmROUHQ3NG4zM1RqMDBBZ1AyaU1MY3dYSGo4dkpDZG1SM1ZjZGZYMXpkY2RORkYxK3pwYzlOT21mNzU3TnpzZk5WQldrOEFBUFpXZG1aVytOeHg1NGNCUmYyak8vWXJyN3p5NW5YcjFtM3ErbnEvUWYwT1BIajJJZjlGZFNBQUFIMjIrVjkwL09mQ1FSV2pvenYyKysrLy8vRWYvL2pIOSs3cGMwZWVmZFRWbVZtUmpVTVFBSUE0WkdWbWhZdU92eUNNSHpvMnVtTmZ0V3JWdW5uejVsMjFwOCtObUR6eTZNcXBvMmFyRVBicCtXZ0pnSDBoUHljdlhIRHMrV0hjQWZFMS81YVdsdFpQZi9yVGw5WFYxZFYzL1Z4T2ZrN1JNZWZQdmxHRklBQUFmYzdnZm9QQzUyZC9MZ3dxR1JqbDhYLzJzNS85K29zdnZ2aktuajUzNUtlUCtwZWlzcUlLVmNLK3RsZTNBTHdGRUhpL0pnK2ZHTDU2K3BlamJmN1hYWGZkcmIvNHhTOSt0NmZQVlUwYmZjS0VveWVkclVyNHNQYW1MNXNBQUQwaVB5Yy9mSHpHR2VFalkyYUdSRWhFdVFZLytNRVAvcy8xMTE5LzY1NCtWMXhlTXV5NGVYTytxVkxZWHdRQW9OdE5IWGxJK05UaG53Z2wrY1hScnNFOTk5enp3S1dYWG5yZG5qNlhtWjJWZTlMRnA5NmFXNUJib2xvUUFJQmViOHlRZzhMSmg1d1E1VnY4M3V5WHYvemxJK2VmZi83WFVxbFVhaytmUDM3ZW5HOE5xaHg4c0lwQkFBQjZyVVJJaFBIRHhvV1Rwc3dKVllNcW8xK1BPKys4ODc0TEw3endtbVF5bWR6VDV3ODc4L0RMRHBvNTlqU1Znd0FBOUVvSGxBMEpNMFlkR3FaWEhScktDa3N0U0FqaGxsdHV1Zk9LSzY2NHFiT3pjNDhQWkUwNjV1Qi9tbkhtNFpkWktRUUFvTmNvemk4T293WlhoZEdEcThMWUE4YUVJYVhldWJaYk1wbE1YbkhGRlRmdDZkZjc3amJtOEhGbkhuWGVzZGRaTFFRQUlDMGtFb21RazVVVGNySnlRdTcvKzk5K0JTV2h2TGc4bEJlWGg0RWxBOEtRMG9vd01OSzM4YjJYWGJ0Mk5aNXp6am4vOVpGSEh2blRPMzNONkJsalRqbitjeWQ4TzVGSStPbXJDQUJBOTZpcHFmbVRWZGcvRmk5ZVhIM1dXV2Q5Y2VuU3BUWHY5RFhqWjAwODY5anpaOStZeUVoa1dqSFNpVFFLc0JmbXo1Ly9tNWt6WjM3eTNaci9sRGxUUDN2Y1orZmNyUGxqQWdEUXkyM2Z2cjN1a2tzdStlLzMzbnZ2dysvME5ZbU1ST2FzYzQ2KzJxLzNSUUFBNkFNZWZmVFJweSs0NElKLzJiaHg0NVozK3Byc3ZKekNFNzl3OHIrUE9ManlHQ3RHT3Z2QXR3RDhIZ0FnTmhzM2J0d3lkKzdjeTA4NTVaUUwzcTM1RHhoV1B2YlQvMjN1YnpWLzlvY1AycDlOQUFEZVFVZEhSL0w3My8vK1BmLzZyLy82ditycjZ4dmU3V3ZISFRuaEUwZWZkOXkvWmVWazVWazVlZ01CQUdBUDdyLy8vc2V2dXVxcS8vRnVEL21GRUVKZVlWN3BVZWNkZC8xQmg0MDUxYW9oQUFEMFVrODg4Y1N6MTExMzNhMExGaXhZK0Y1Zk8yTHl5S09QbXpmbjVvSitoWU9zSEFJQVFDL1QyZG5aK2ZERER6OTF3dzAzZlBlRkYxNVk5RjVmWDlDdmNOQ3NjNDY2MnMvMFJ3QUE2SVVhR2hxYTVzK2YvNXZiYnJ2dHJ1cnE2cFh2OWZVWkdSbVprNDQ3K055Wkh6L2lpcHo4bkNJcmlBQUEwSXU4OU5KTGkrKzg4ODc3N3I3NzdnZmU2K0crM2FxbWpUN2hJMmNkK2RYU2lqSy84aEFCQUtDM3FLbXBXZmVyWC8zcWtmbno1Ly9tOWRkZlgvNSsvOTd3aVFmT091ek1qMXhXTVhySU5LdUlBQURRQzd6NjZxdExIM3p3d1QvKyt0ZS8vdjNDaFF0ZmU5OS9NUkVTSXcrdVBIYjZHVE12SFZ4Wk1jVktJZ0FBcExHTkd6ZHUrZk9mLy96aVk0ODk5c3hqanozMjV3MGJObXo1SUg4L096ZTdZTnlSRXo1eDhPeERQbE5hVVZabFJSRUFBTkpNYzNOenkrTEZpNnNYTGx6NDJuUFBQZmZ5czg4Kys5TEtsU3ZYN3MyL05Xams0TW5qWjAwNGE4eEh4cC9wNFQ0RUFJQTAwTkRRMExSaXhZclYxZFhWTlcrODhjYUs2dXJxbWxkZWVlV05KVXVXckVnbWs4bTkvWGRMeWt1R2paNHg1cFN4UjA3NFJQOEQrbysyMGdnQUFOMG9sVXFsa3Nsa3F1UC9TcmEydHJZMU5qWTJOVFEwTkRVME5EVFYxOWZ2MnJadFc5M1dyVnQzMU5iV2JxK3RyZDIrZnYzNlRXdldyTm13WnMyYWpkdTNiNi9ycnY4di9ZY09HRk01ZGRUeG93NGRmZExBRVlNbSt1NGdBQUM5Vm1WbDVUR3JWcTFhWnlYZXJxQmY0YUNoWTRmT0dENXB4RWNQbkRUeXFNSlNQN0VQQkFDZ2IyMW1PVmw1QTRhV2p4MDRZdERFaXRGRHBnNDU2SURwSlFQN0RiY3lJQUFBZlVCMmJuWkJ2MEdsSTBvcnlpckxocFNOS3Ewb3F5d2ZQbkJjMlpEK294SVppVXdyQkFJQWtJWVNpVVJHSWlPUmtaR1prWlhJeU1qTXpNck15YzdOTHNqT3l5N0l6czB1eU1uUEtjNHJ5aS9OSzhvcnl5OHU2Sjlmbk4rL3NLeW9vcmgvOFFGRkE0cUg1QlhtbFZwRkVBQ0FMajd6N1hsL0tpNHZHV1lsZ0hlVFlRa0FRQUFBQUFRQUFFQUFBQUFFQUFCQUFBQUFCQUFBUUFBQUFBUUFBRUFBQUFBRUFBQkFBQUFBQkFBQVlCOEhnTy9PdXlWaDJRQWd2WHpRL213Q0FBQW1BQUNBQUFBQUNBQUFnQUFBQUFnQUFJQUFBQUFJQUFDQUFBQUFDQUFBZ0FBQUFLUmZBUEQ3QUFBZ2ZleE5YellCQUFBVEFBQkFBQUFBQkFBQVFBQUFBQVFBQUtEUEJ3QnZCUVNBL1c5dis3RUpBQUNZQUFBQUFnQUFJQUFBQUFJQUFDQUFBQUJSQkFCdkJRU0EvZWZEOUdFVEFBQXdBUUFBQkFBQVFBQUFBQVNBRUlJSEFRRmdmL2l3L2RjRUFBQk1BQUFBQVFBQUVBQUFBQUhnSHp3SUNBRDdUbmYwWFJNQUFEQUJBQUFFQUFCQUFIZzNuZ01BZ0o3WFhmM1dCQUFBVEFBQUFBRUFBQkFBQUFBQjRHMDhDQWdBUGFjNys2d0pBQUNZQUFBQUFzQmVjQnNBQUxwZmQvZFhFd0FBTUFFQUFBUUFBRUFBZUw4OEJ3QUE2ZDFYVFFBQXdBUUFBSWhCajQ3cUw3M2o4azVMVEZjRGl2cUg2ejkxcllYb1k5bzYyc0lWUC91NmhZQnUxbE8zMVUwQUFDQkNBZ0FBQ0FBQVFBeDYvTzE2bmdPZ0s4OEE5RTJOalkzTlJVVkZrM2QvbkoyYm5YL1I5eTlkYkdWZzcvWGsyK3BOQUFBZ1FnSUFBQWdBM2M5UEJRU0E5T3VmSmdBQVlBSUFBQWdBM2NSdEFBQklyNzVwQWdBQUpnQ21BQURRMTYvK1RRQUF3QVFBQUJBQWVvRGJBQUNRSG4zU0JBQUFJcFJsQ2RqWHRqVnNEMSs4ODh2LytIalgxdnAxZDMzdGptT3NETUMrczg4bkFHNERBTUQrNzQ5dUFRQ0FDWUFwQUFERTBCYzlBOEIrVjF4ZU11elNPeTVmYmlVQSt2Z0VBQUNJTkFDNERRQUErNjhmbWdBQWdBbUFLUUFBeE5BSFRRQUF3QVRBRkFBQVl1aC9KZ0FBWUFJQUFBZ0ErNGpiQUFERUpCMzZuZ2tBQUpnQW1BSUFRQXo5emdRQUFFd0FwQ0lBaUtIUG1RQUFnQW1BZEFRQU1mUTNFd0FBTUFHUWtnQWdocjVtQWdBQUpnRFNFZ0RFME05TUFBREFCRUJxQW9BWStwZ0pBQUNZQUVoUEFCQkQveklCQUFBVEFDa0tBR0xvV3lZQUFHQUNJRTBCUUF6OUtzT2lBa0I4ZmNvdEFBQ0lVSzhMQUtZQUFPaFBKZ0FBUUN3QndCUUFBSDNKQkFBQWlDVUFtQUlBb0I5Rk9nRVFBZ0RRaHlJTUFBQkFwQUhBRkFBQS9TZlNDWUFRQUlDK0UyRUFBQUFpRFFDbUFBRG9OeVlBQUVBc0FjQVVBQUI5SnRJSmdCQUFnUDRTWVFBQUFDSU5BS1lBQU9ncmtVNEFoQUFBOUpNSUF3QUFFR2tBTUFVQVFCK0pkQUlnQkFDZ2YwUVlBSVFBQVBTTlNBTUFBQkJwQURBRkFFQy9pSFFDSUFRQW9FOUVHQUNFQUFEMGgwZ0RBQUFRYVFBd0JRQWc5cjZRNFpzTmdPWnZBdUNiRG9BK0lBQUFBQUtBOUFlQS9WOEFVQVFBMlBjRkFNVUFnUDFlQUZBVUFOam5CUUFBUUFDUURnR3d2d3NBaWdRQSs3b0FvRmdBc0o4TEFJb0dBUHU0QUtCNEFMQi9Dd0NLQ0FEN3RnQUFBQWdBMGlTQS9Sb0JRRkVCMktjUkFCUVhnUDFaQUVDUkFkaVhCUUFVRzREOVdBQkEwUUhZaHdVQUZCK0EvVmNBVUlRQTJIY0ZBTVVJZ1AxV0FGQ1VBTmhuQlFERkNZRDlWUUJRcEFEWVZ3VUF4UXFBL1ZRQVVMUUE5bEVFQU1VTFlQOUVBRkRFQVBaTkJBREZER0MvUkFCUTFBRDJTUVFBeFExZ2Z5U0VFSUxGM284dXZlUHlUcXNBYVB3YXZ3bUFvZ2V3RHlJQUtINEEreDhDZ0pNQXdMNkhBT0JrQUxEZklRQTRLUURzYzd4dnZoRnB5anNFQUkwZkV3QW5DNEQ5REFIQVNRTmdIME1BY1BJQTJMLzRnSHh6ZWhIUEJRQWFQeVlBVGlvQSt4UUNnSk1Md1A3RSsrZWIxWXU1SlFCby9KZ0FPT2tBN0VNSUFFNCtBUHNQNzh3M3J3OXhTd0RRK0RFQmNGSUMyR2NRQUp5Y0FQWVgvai9mekQ3TUxRRkE0OGNFd0VrTFlCL0JCTUEwQUVEak53SEF5UXhndnpBQndEUUEwUGdSQUJBRUFJMmZQc1l0QUNjOVlCL0FCQURUQUVEanh3UUFtd0hnZk1jRUFOTUFRT05IQUVBUUFEUitCQUFFQVVEanA3ZndEQUEyRVhEZVlnSUFwZ0dnOFNNQWdDQUFHajhDQUFnQ29QRWpBSUFnQUJvL0FnQUlBcUR4SXdBZ0NBQWFQd0lBZ2dDZzhTTUFJQWdBR2o4Q0FJSUFvUEVqQUNBTWdLWVBBZ0NDQUdqOElBQWdDSURHRHdJQXdnQm8raUFBSUFpQXhnOENBTUlBYVBvZ0FDQU1nS1lQQWdDQ0FHajhDQUFnRElDbWp3QUF3Z0JvK2dnQUlCQ2c0WU1BQU1JQW1qNElBQ0FRb09HREFBRENBSm8rQ0FBZ0ZLRFpnd0FBQWdFYVBnZ0FJQlNnMllNQUFFSUJtajBJQUNBY2FQS0FBQURDZ1NZUENBQWdNT3pId0tDaEF3QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBTUFlL1NleXVaSVJCNkJlNlFBQUFBQkpSVTVFcmtKZ2dnPT0iLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogIm1hc2thYmxlIGFueSJ9XX0=">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
@@ -118,8 +128,8 @@ select.fi{cursor:pointer}
 
 /* ── AUTH ─────────────────────────────────────────────────────────────────── */
 .auth-screen{position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto;display:none}
-.auth-screen.show{display:block}
-.auth-wrap{max-width:430px;margin:0 auto;padding:40px 24px 30px;min-height:100%;display:flex;flex-direction:column;justify-content:center}
+.auth-screen.show{display:flex;align-items:center;justify-content:center}
+.auth-wrap{width:100%;max-width:430px;padding:52px 24px 32px;display:flex;flex-direction:column;justify-content:center}
 .auth-brand{text-align:center;margin-bottom:28px}
 .auth-brand .logo-main{font-size:32px}
 .auth-brand .logo-sub{margin-top:6px}
@@ -127,6 +137,8 @@ select.fi{cursor:pointer}
 .auth-msg.err{display:block;background:var(--rose-l);color:var(--rose-d);border:1px solid var(--rose)}
 .auth-msg.ok{display:block;background:var(--sage-l);color:var(--sage-d);border:1px solid var(--sage)}
 .auth-foot{text-align:center;margin-top:16px;font-size:12px;color:var(--text3);font-weight:500}
+.auth-dark-btn{position:fixed;top:16px;right:18px;width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:all .2s;color:var(--text2);z-index:301}
+.auth-dark-btn:hover{background:var(--bg2);border-color:var(--border2)}
 
 /* ── TODAY ALERT (eventos + cumples) ─────────────────────────────────────── */
 .today-alert{border-radius:var(--r);padding:14px 16px;margin-bottom:12px;background:var(--gold-l);border:1px solid var(--gold);font-size:13px;color:var(--gold-d);font-weight:500;line-height:1.55}
@@ -279,6 +291,7 @@ select.fi{cursor:pointer}
 <!--  AUTH SCREEN (login / registro)                                       -->
 <!-- ════════════════════════════════════════════════════════════════════ -->
 <div id="authScreen" class="auth-screen show">
+  <button class="auth-dark-btn" id="authDarkBtn" onclick="toggleDarkGlobal()" title="Modo oscuro">🌙</button>
   <div class="auth-wrap">
     <div class="auth-brand">
       <div class="logo-main">Agenda <em>Psicopé</em></div>
@@ -306,6 +319,9 @@ select.fi{cursor:pointer}
         </div>
         <button onclick="doLogin()" class="btn btn-p" id="loginBtn">Iniciar sesión</button>
         <div id="loginMsg" class="auth-msg"></div>
+        <div style="text-align:center;margin-top:14px">
+          <button onclick="setAuthTab('reset')" style="background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;font-family:var(--fb);font-weight:600;text-decoration:underline;padding:4px">¿Olvidaste tu contraseña?</button>
+        </div>
       </div>
 
       <!-- REGISTRO -->
@@ -328,9 +344,49 @@ select.fi{cursor:pointer}
         <button onclick="doRegister()" class="btn btn-p" id="regBtn">Crear cuenta</button>
         <div id="regMsg" class="auth-msg"></div>
       </div>
+
+      <!-- RECUPERAR CONTRASEÑA -->
+      <div id="resetForm" style="display:none">
+        <div style="text-align:center;margin-bottom:18px">
+          <div style="font-family:var(--fd);font-size:19px;color:var(--text);margin-bottom:5px">Recuperar contraseña</div>
+          <div style="font-size:12px;color:var(--text3);font-weight:500;line-height:1.5">Te enviamos un mail con el link<br>para crear una nueva contraseña</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Email</label>
+          <input type="email" id="resetEmail" class="fi" autocomplete="email" placeholder="tu@email.com">
+        </div>
+        <button onclick="doResetPassword()" class="btn btn-p" id="resetBtn">Enviar instrucciones</button>
+        <button onclick="setAuthTab('login')" class="btn btn-s" style="margin-top:8px">← Volver al login</button>
+        <div id="resetMsg" class="auth-msg"></div>
+      </div>
+
+      <!-- NUEVA CONTRASEÑA (cuando el usuario vuelve desde el mail) -->
+      <div id="newPwForm" style="display:none">
+        <div style="text-align:center;margin-bottom:18px">
+          <div style="font-size:32px;margin-bottom:8px">🔐</div>
+          <div style="font-family:var(--fd);font-size:19px;color:var(--text);margin-bottom:5px">Nueva contraseña</div>
+          <div style="font-size:12px;color:var(--text3);font-weight:500">Elegí una contraseña segura</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Nueva contraseña</label>
+          <div class="pw-wrap">
+            <input type="password" id="newPw" class="fi" autocomplete="new-password" placeholder="Mínimo 6 caracteres">
+            <button type="button" class="pw-toggle" onclick="togglePw('newPw',this)" title="Mostrar/Ocultar">👁️</button>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">Repetir contraseña</label>
+          <div class="pw-wrap">
+            <input type="password" id="newPw2" class="fi" autocomplete="new-password" placeholder="Repetí la contraseña">
+            <button type="button" class="pw-toggle" onclick="togglePw('newPw2',this)" title="Mostrar/Ocultar">👁️</button>
+          </div>
+        </div>
+        <button onclick="doUpdatePassword()" class="btn btn-p" id="newPwBtn">Cambiar contraseña</button>
+        <div id="newPwMsg" class="auth-msg"></div>
+      </div>
+
     </div>
 
-    <div class="auth-foot">El primer usuario registrado será el super admin 👑</div>
   </div>
 </div>
 
@@ -741,9 +797,9 @@ function saveLocal(){
   try{
     localStorage.setItem(localKey(),JSON.stringify({
       extraSubs:S.extraSubs, goals:S.goals, diary:S.diary,
-      mood:S.mood, dark:S.dark, pomSes:S.pomSes, habits:S.habits
+      mood:S.mood, pomSes:S.pomSes, habits:S.habits
     }));
-    localStorage.setItem('psicope_global',JSON.stringify({dark:S.dark}));
+    // dark mode se guarda vía setDark() directo en psicope_global
   }catch(e){}
 }
 // compatibilidad con el nombre histórico
@@ -753,12 +809,21 @@ function save(){ saveLocal(); }
 //  AUTH UI
 // ═══════════════════════════════════════════════════════════════
 function setAuthTab(t){
+  // tabs: solo visibles en login/reg
+  const hideTabs = t==='reset' || t==='newpw';
+  document.getElementById('tabLogin').style.display = hideTabs ? 'none' : '';
+  document.getElementById('tabReg').style.display   = hideTabs ? 'none' : '';
   document.getElementById('tabLogin').classList.toggle('active', t==='login');
   document.getElementById('tabReg').classList.toggle('active', t==='reg');
-  document.getElementById('loginForm').style.display = t==='login' ? '' : 'none';
-  document.getElementById('regForm').style.display   = t==='reg'   ? '' : 'none';
-  document.getElementById('loginMsg').className='auth-msg';
-  document.getElementById('regMsg').className='auth-msg';
+  // formularios
+  document.getElementById('loginForm').style.display  = t==='login' ? '' : 'none';
+  document.getElementById('regForm').style.display    = t==='reg'   ? '' : 'none';
+  document.getElementById('resetForm').style.display  = t==='reset' ? '' : 'none';
+  document.getElementById('newPwForm').style.display  = t==='newpw' ? '' : 'none';
+  // limpiar mensajes
+  ['loginMsg','regMsg','resetMsg','newPwMsg'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.className='auth-msg';
+  });
 }
 
 function togglePw(inputId, btn){
@@ -828,6 +893,45 @@ async function doLogin(){
   }
 }
 
+async function doResetPassword(){
+  const email = document.getElementById('resetEmail').value.trim();
+  const btn   = document.getElementById('resetBtn');
+  if(!email || !email.includes('@')){ showAuthMsg('resetMsg','Ingresá un email válido',false); return; }
+  btn.disabled=true; btn.textContent='Enviando...';
+  try{
+    // redirectTo = la URL actual sin hash ni query (donde vive el archivo)
+    const redirectTo = window.location.href.split('?')[0].split('#')[0];
+    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
+    if(error) throw error;
+    showAuthMsg('resetMsg','¡Listo! Revisá tu casilla y seguí el link 📧 Puede tardar unos minutos.', true);
+    btn.textContent='Reenviar instrucciones';
+  }catch(e){
+    showAuthMsg('resetMsg', e.message||'Error al enviar el mail', false);
+    btn.textContent='Enviar instrucciones';
+  }finally{
+    btn.disabled=false;
+  }
+}
+
+async function doUpdatePassword(){
+  const pw1 = document.getElementById('newPw').value;
+  const pw2 = document.getElementById('newPw2').value;
+  const btn  = document.getElementById('newPwBtn');
+  if(pw1.length < 6){ showAuthMsg('newPwMsg','La contraseña debe tener al menos 6 caracteres',false); return; }
+  if(pw1 !== pw2){ showAuthMsg('newPwMsg','Las contraseñas no coinciden',false); return; }
+  btn.disabled=true; btn.textContent='Cambiando...';
+  try{
+    const { error } = await sb.auth.updateUser({ password: pw1 });
+    if(error) throw error;
+    showAuthMsg('newPwMsg','¡Contraseña actualizada! Iniciá sesión con la nueva.', true);
+    setTimeout(()=>setAuthTab('login'), 2200);
+  }catch(e){
+    showAuthMsg('newPwMsg', e.message||'Error al actualizar la contraseña', false);
+  }finally{
+    btn.disabled=false; btn.textContent='Cambiar contraseña';
+  }
+}
+
 async function doLogout(){
   if(!confirm('¿Cerrar sesión?')) return;
   try{
@@ -851,11 +955,9 @@ async function onSession(session){
   let { data: prof } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
   if(!prof){
     // intentar crearlo (el trigger pudo no haber corrido)
-    const countRes = await sb.from('profiles').select('id', { count:'exact', head:true });
-    const isFirst = (countRes.count === 0);
     const fullName = session.user.user_metadata?.full_name || '';
     const ins = await sb.from('profiles').insert({
-      id: currentUser.id, email: currentUser.email, full_name: fullName, is_admin: isFirst
+      id: currentUser.id, email: currentUser.email, full_name: fullName, is_admin: false
     }).select().maybeSingle();
     prof = ins.data;
   }
@@ -869,8 +971,8 @@ async function onSession(session){
 
   // cargar estado local del usuario
   loadLocal();
-  if(S.dark){document.body.classList.add('dark');document.getElementById('darkBtn').textContent='☀️';}
-  else{document.body.classList.remove('dark');document.getElementById('darkBtn').textContent='🌙';}
+  // dark mode ya aplicado desde el dispositivo en init; solo sincronizamos S.dark
+  S.dark = getDark();
   document.getElementById('pomSesEl').textContent='Sesiones completadas: '+S.pomSes;
 
   // cargar datos compartidos
@@ -1427,8 +1529,12 @@ async function addBday(){
   msgEl.className='auth-msg';
   if(!name||!date){ showAuthMsg('bdayMsg','Completá nombre y fecha',false); return; }
 
+  // date_md = "MM-DD" calculado en el cliente (columna normal, sin funciones en DB)
+  const dateParts = date.split('-');  // ["YYYY","MM","DD"]
+  const date_md = dateParts[1] + '-' + dateParts[2];
+
   const payload = {
-    name, date,
+    name, date, date_md,
     created_by: currentUser.id,
     creator_email: currentUser.email
   };
@@ -1555,12 +1661,27 @@ async function toggleAdmin(uid, makeAdmin){
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  DARK MODE
+//  DARK MODE — guardado en el dispositivo (independiente del usuario)
 // ═══════════════════════════════════════════════════════════════
-document.getElementById('darkBtn').onclick=function(){
-  S.dark=!S.dark;document.body.classList.toggle('dark',S.dark);
-  this.textContent=S.dark?'☀️':'🌙';saveLocal();
-};
+function getDark(){ 
+  try{ return JSON.parse(localStorage.getItem('psicope_global')||'{}').dark===true; }catch(e){ return false; }
+}
+function setDark(val){
+  document.body.classList.toggle('dark', val);
+  // botón de la app
+  const appBtn = document.getElementById('darkBtn');
+  if(appBtn) appBtn.textContent = val ? '☀️' : '🌙';
+  // botón del login
+  const authBtn = document.getElementById('authDarkBtn');
+  if(authBtn) authBtn.textContent = val ? '☀️' : '🌙';
+  // persistir en el dispositivo (sin necesidad de usuario)
+  try{ localStorage.setItem('psicope_global', JSON.stringify({dark: val})); }catch(e){}
+  // sincronizar con el estado S si ya está disponible
+  S.dark = val;
+}
+function toggleDarkGlobal(){ setDark(!getDark()); }
+
+document.getElementById('darkBtn').onclick = toggleDarkGlobal;
 
 // ═══════════════════════════════════════════════════════════════
 //  MODALS
@@ -1569,18 +1690,17 @@ function closeM(id){document.getElementById(id).style.display='none';}
 document.querySelectorAll('.mo').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.style.display='none';});});
 
 // Enter key en login/registro
-document.getElementById('loginPw').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-document.getElementById('regPw').addEventListener('keydown',   e=>{ if(e.key==='Enter') doRegister(); });
+document.getElementById('loginPw').addEventListener('keydown',    e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('regPw').addEventListener('keydown',     e=>{ if(e.key==='Enter') doRegister(); });
+document.getElementById('resetEmail').addEventListener('keydown', e=>{ if(e.key==='Enter') doResetPassword(); });
+document.getElementById('newPw2').addEventListener('keydown',     e=>{ if(e.key==='Enter') doUpdatePassword(); });
 
 // ═══════════════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════════════
 (async function init(){
-  // dark global apenas arranca (para que el screen de auth se vea bien)
-  try{
-    const g = JSON.parse(localStorage.getItem('psicope_global')||'{}');
-    if(g.dark){ document.body.classList.add('dark'); document.getElementById('darkBtn').textContent='☀️'; }
-  }catch(e){}
+  // Aplicar dark mode guardado en el dispositivo (antes de cualquier render)
+  setDark(getDark());
 
   document.getElementById('app').style.display='none';
 
@@ -1592,8 +1712,14 @@ document.getElementById('regPw').addEventListener('keydown',   e=>{ if(e.key==='
     document.getElementById('authScreen').classList.add('show');
   }
 
-  // escuchar cambios de auth (logout en otra pestaña, etc.)
+  // escuchar cambios de auth (logout en otra pestaña, recupero de pw, etc.)
   sb.auth.onAuthStateChange((event, sess) => {
+    if(event === 'PASSWORD_RECOVERY'){
+      // El usuario volvió desde el link del mail de recuperación
+      document.getElementById('app').style.display='none';
+      document.getElementById('authScreen').classList.add('show');
+      setAuthTab('newpw');
+    }
     if(event === 'SIGNED_OUT'){
       document.getElementById('app').style.display='none';
       document.getElementById('authScreen').classList.add('show');
