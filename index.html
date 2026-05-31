@@ -769,7 +769,7 @@ let S = {
   mood:null,
   pomType:'foco', pomRunning:false, pomInterval:null, pomSec:25*60, pomSes:0, pomEndTime:0,
   // SHARED (Supabase):
-  events:[], birthdays:[],
+  events:[], birthdays:[], subjectNotes:{},
   // LOCAL per user:
   extraSubs:[], goals:[], diary:[],
   habits:{},   // {YYYY-WW: [bool,bool,bool,bool]}
@@ -1049,6 +1049,22 @@ function setupRealtime(){
         if(S.view==='Extras' && S.extra==='cumple') renderBdays();
         if(S.view==='Extras' && S.extra==='cal') renderCal();
       })
+      .on('postgres_changes', { event:'*', schema:'public', table:'subject_notes' }, (payload)=>{
+        // actualizar caché local y refrescar si el modal de la materia está abierto
+        const row = payload.new || {};
+        if(row.subject_id){
+          S.subjectNotes[row.subject_id] = row;
+          const ta = document.getElementById('notesTa');
+          const sid = document.getElementById('notesSubjectId');
+          if(ta && sid && sid.value === row.subject_id){
+            // solo actualizar si el campo está vacío en el cliente (no sobrescribir edición activa)
+            if(document.activeElement !== ta){
+              ta.value = row.content || '';
+              refreshNotesFooter(row);
+            }
+          }
+        }
+      })
       .subscribe();
   }catch(e){ console.warn('realtime',e); }
 }
@@ -1288,10 +1304,16 @@ function renderMaterias(){
   document.getElementById('materiasEl').innerHTML=html;
 }
 
-function showDetail(sid){
+async function showDetail(sid){
   const c=ALL.find(x=>x.id===sid);if(!c)return;
   const evs=S.events.filter(e=>e.subjectId===sid).sort((a,b)=>a.date.localeCompare(b.date));
+
+  // Notas del caché (puede ya estar cargado por realtime)
+  const cached = S.subjectNotes[sid];
+
   document.getElementById('detailContent').innerHTML=`
+    <!-- Campo oculto para saber qué materia tiene el textarea abierto -->
+    <input type="hidden" id="notesSubjectId" value="${sid}">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
       <div style="width:14px;height:14px;border-radius:50%;background:${c.color}"></div>
       <div class="mt" style="margin:0">${c.materia}</div>
@@ -1300,23 +1322,86 @@ function showDetail(sid){
       <div style="font-size:13px;color:var(--text2);margin-bottom:5px;font-weight:500">👩‍🏫 ${c.doc}</div>
       <div style="font-size:13px;color:var(--text2);font-weight:500">🕐 ${c.hora}</div>
     </div>
+
+    <!-- NOTAS COMPARTIDAS -->
     <div class="fg">
-      <label class="fl">Notas y bibliografía (privadas)</label>
-      <textarea id="notesTa" class="fi" rows="3" placeholder="Bibliografía, trabajos finales, recordatorios...">${c.notes||''}</textarea>
-      <button onclick="saveNotes('${sid}')" style="margin-top:7px;background:var(--sage);color:#fff;border:none;padding:8px 16px;border-radius:var(--r-sm);cursor:pointer;font-size:12px;font-family:var(--fb);font-weight:700" id="saveNoteBtn">Guardar notas</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <label class="fl" style="margin:0">📝 Notas y bibliografía</label>
+        <span style="font-size:10px;background:var(--sage-l);color:var(--sage-d);padding:2px 9px;border-radius:10px;font-weight:700;letter-spacing:.4px">🌐 COMPARTIDAS</span>
+      </div>
+      <textarea id="notesTa" class="fi" rows="4"
+        placeholder="Bibliografía obligatoria, resúmenes, links, recordatorios... Todos pueden leer y editar.">${cached ? (cached.content||'') : '⏳ Cargando...'}</textarea>
+      <div id="notesFooter" style="font-size:11px;color:var(--text3);margin-top:5px;font-weight:500;min-height:16px">
+        ${cached ? notesFooterText(cached) : ''}
+      </div>
+      <button onclick="saveNotes('${sid}')"
+        style="margin-top:8px;background:var(--sage);color:#fff;border:none;padding:9px 18px;border-radius:var(--r-sm);cursor:pointer;font-size:13px;font-family:var(--fb);font-weight:700"
+        id="saveNoteBtn">Guardar notas</button>
     </div>
-    <div style="font-family:var(--fd);font-size:16px;margin:14px 0 10px">Eventos registrados</div>
-    ${evs.length?evs.slice(0,8).map(e=>`<div class="ev-item" style="border-left-color:${c.color}">
+
+    <div style="font-family:var(--fd);font-size:16px;margin:18px 0 10px">Eventos de la materia</div>
+    ${evs.length?evs.slice(0,8).map(e=>`<div class="ev-item" style="border-left-color:${c.color};cursor:pointer" onclick="showEvDetail('${e.id}')">
       <div class="ev-time">${e.date.slice(8)}/${e.date.slice(5,7)}</div>
       <div style="flex:1"><div class="ev-title">${EVI[e.type]} ${escapeHtml(e.title)}</div>${e.notes?`<div class="ev-meta">${escapeHtml(e.notes)}</div>`:''}${e.creator_email && e.created_by!==currentUser?.id?`<div class="ev-author">por ${escapeHtml(e.creator_email.split('@')[0])}</div>`:''}</div>
-      ${canDeleteEvent(e)?`<button onclick="delEv('${e.id}');showDetail('${sid}')" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;padding:0 4px">×</button>`:''}
+      <div style="color:var(--text4);font-size:18px;padding-left:4px">›</div>
     </div>`).join(''):'<div style="color:var(--text3);font-size:13px;text-align:center;padding:14px;font-weight:500">Sin eventos registrados aún</div>'}
   `;
   document.getElementById('detailModal').style.display='flex';
+
+  // Cargar notas desde Supabase si no están en caché
+  if(!cached){
+    const { data } = await sb.from('subject_notes').select('*').eq('subject_id', sid).maybeSingle();
+    const ta = document.getElementById('notesTa');
+    const footer = document.getElementById('notesFooter');
+    if(ta){
+      ta.value = data ? (data.content||'') : '';
+      if(footer) footer.textContent = data ? notesFooterText(data) : 'Sin notas aún — sé la primera en agregar 📚';
+      if(data) S.subjectNotes[sid] = data;
+    }
+  }
 }
-function saveNotes(sid){
-  const c=ALL.find(x=>x.id===sid);if(c){c.notes=document.getElementById('notesTa').value;saveLocal();}
-  const b=document.getElementById('saveNoteBtn');if(b){b.textContent='✓ Guardado';setTimeout(()=>{if(b)b.textContent='Guardar notas';},1500);}
+
+function notesFooterText(row){
+  if(!row || !row.updated_at) return '';
+  const who = row.updater_email
+    ? (row.updated_by===currentUser?.id ? 'Vos' : row.updater_email.split('@')[0])
+    : 'alguien';
+  const when = new Date(row.updated_at).toLocaleDateString('es-AR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+  return `Última edición por ${who} · ${when}`;
+}
+
+function refreshNotesFooter(row){
+  const footer = document.getElementById('notesFooter');
+  if(footer) footer.textContent = notesFooterText(row);
+}
+
+async function saveNotes(sid){
+  const ta = document.getElementById('notesTa');
+  const btn = document.getElementById('saveNoteBtn');
+  if(!ta || !btn) return;
+  const content = ta.value;
+  btn.disabled=true; btn.textContent='Guardando...';
+  try{
+    const payload = {
+      subject_id: sid,
+      content,
+      updated_by: currentUser.id,
+      updater_email: currentUser.email,
+      updated_at: new Date().toISOString()
+    };
+    const { data, error } = await sb.from('subject_notes')
+      .upsert(payload, { onConflict: 'subject_id' })
+      .select().single();
+    if(error) throw error;
+    S.subjectNotes[sid] = data;
+    const footer = document.getElementById('notesFooter');
+    if(footer) footer.textContent = notesFooterText(data);
+    btn.textContent='✓ Guardado';
+    setTimeout(()=>{ if(btn) btn.textContent='Guardar notas'; btn.disabled=false; }, 1800);
+  }catch(e){
+    alert('No se pudo guardar: '+e.message);
+    btn.disabled=false; btn.textContent='Guardar notas';
+  }
 }
 function showExtraDetail(id){
   const s=S.extraSubs.find(x=>x.id===id);if(!s)return;
