@@ -762,7 +762,7 @@ let S = {
   curMonth:new Date().getMonth(), curYear:new Date().getFullYear(),
   selDate:null, selColor:'#6B9E70',
   mood:null,
-  pomType:'foco', pomRunning:false, pomInterval:null, pomSec:25*60, pomSes:0,
+  pomType:'foco', pomRunning:false, pomInterval:null, pomSec:25*60, pomSes:0, pomEndTime:0,
   // SHARED (Supabase):
   events:[], birthdays:[],
   // LOCAL per user:
@@ -785,7 +785,13 @@ function localKey(){ return currentUser ? 'psicope_v4_'+currentUser.id : 'psicop
 function loadLocal(){
   try{
     const d=JSON.parse(localStorage.getItem(localKey())||'{}');
-    ['extraSubs','goals','diary','mood','dark','pomSes','habits'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
+    ['extraSubs','goals','diary','mood','dark','pomSes','habits','pomType','pomEndTime','pomRunning'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
+  // Si el timer seguía corriendo, restaurar desde endTime guardado
+  if(S.pomRunning && S.pomEndTime){
+    const remaining = Math.ceil((S.pomEndTime - Date.now()) / 1000);
+    if(remaining > 0){ S.pomSec = remaining; }
+    else { S.pomRunning = false; S.pomEndTime = 0; S.pomSec = PT[S.pomType]||25*60; }
+  }
   }catch(e){}
   // dark mode también globalmente (para el screen de auth)
   try{
@@ -798,7 +804,8 @@ function saveLocal(){
   try{
     localStorage.setItem(localKey(),JSON.stringify({
       extraSubs:S.extraSubs, goals:S.goals, diary:S.diary,
-      mood:S.mood, pomSes:S.pomSes, habits:S.habits
+      mood:S.mood, pomSes:S.pomSes, habits:S.habits,
+      pomType:S.pomType, pomEndTime:S.pomEndTime, pomRunning:S.pomRunning
     }));
     // dark mode se guarda vía setDark() directo en psicope_global
   }catch(e){}
@@ -985,6 +992,18 @@ async function onSession(session){
 
   // render inicial
   renderHome();
+  // Reanudar pomodoro si seguía corriendo antes de cerrar la app
+  if(S.pomRunning && S.pomEndTime && S.pomSec > 0){
+    // recalcular segundos restantes y reactivar el Worker
+    S.pomSec = Math.max(0, Math.ceil((S.pomEndTime - Date.now()) / 1000));
+    if(S.pomSec > 0){
+      if(pomWorker) pomWorker.postMessage({cmd:'start', endTime: S.pomEndTime});
+      document.getElementById('pomBtn').textContent = '⏸ Pausar';
+      updatePomUI();
+    } else {
+      onPomComplete();
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1422,29 +1441,178 @@ function setExtra(v){
 // ── POMODORO ──────────────────────────────────────────────────
 const PT={foco:25*60,corto:5*60,largo:15*60};
 const PL={foco:'TIEMPO DE FOCO',corto:'DESCANSO CORTO',largo:'DESCANSO LARGO'};
-function setPomT(t){if(S.pomRunning)resetPom();S.pomType=t;S.pomSec=PT[t];['foco','corto','largo'].forEach((x,i)=>document.getElementById('pm'+(i+1)).classList.toggle('active',x===t));document.getElementById('pomLblEl').textContent=PL[t];updatePomUI();}
-function togglePom(){
-  if(S.pomRunning){clearInterval(S.pomInterval);S.pomRunning=false;document.getElementById('pomBtn').textContent='▶ Continuar';}
-  else{S.pomRunning=true;document.getElementById('pomBtn').textContent='⏸ Pausar';
-    S.pomInterval=setInterval(()=>{
-      S.pomSec--;updatePomUI();
-      if(S.pomSec<=0){
-        clearInterval(S.pomInterval);S.pomRunning=false;
-        if(S.pomType==='foco'){S.pomSes++;saveLocal();}
-        document.getElementById('pomSesEl').textContent='Sesiones completadas: '+S.pomSes;
-        document.getElementById('pomBtn').textContent='▶ Iniciar';
-        alert(S.pomType==='foco'?'¡Sesión completada! Tomá un descanso 🌿':'¡Descanso terminado! A estudiar 📚');
-        resetPom();
+// ── POMODORO — Web Worker + Notification + Sonido ────────────────────
+// Worker inline (Blob URL): se ejecuta en hilo separado, no se throttlea
+// aunque el tab esté en segundo plano o el celular bloqueado.
+let pomWorker = null;
+(function initWorker(){
+  const code = `
+    let iv = null;
+    self.onmessage = function(e){
+      if(e.data.cmd === 'start'){
+        clearInterval(iv);
+        const end = e.data.endTime;
+        iv = setInterval(()=>{
+          const rem = Math.max(0, Math.ceil((end - Date.now()) / 1000));
+          self.postMessage({ remaining: rem });
+          if(rem <= 0) clearInterval(iv);
+        }, 500);
       }
-    },1000);
+      if(e.data.cmd === 'stop') clearInterval(iv);
+    };
+  `;
+  try{
+    const blob = new Blob([code], {type:'application/javascript'});
+    pomWorker = new Worker(URL.createObjectURL(blob));
+    pomWorker.onmessage = function(e){
+      S.pomSec = e.data.remaining;
+      updatePomUI();
+      if(S.pomSec <= 0) onPomComplete();
+    };
+  }catch(ex){ console.warn('Worker no disponible, usando setInterval',ex); }
+})();
+
+// Sonido de compleción con Web Audio API (sin archivos externos)
+function playChime(isFoco){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // acorde ascendente: Do-Mi-Sol-Do
+    const notes = isFoco ? [523,659,784,1047] : [784,659,523];
+    notes.forEach((freq, i)=>{
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const t = ctx.currentTime + i * 0.28;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.38, t + 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.85);
+      osc.start(t); osc.stop(t + 0.9);
+    });
+    // armónico suave encima
+    const osc2 = ctx.createOscillator();
+    const g2   = ctx.createGain();
+    osc2.connect(g2); g2.connect(ctx.destination);
+    osc2.type = 'sine';
+    osc2.frequency.value = isFoco ? 2094 : 1047;
+    const tLast = ctx.currentTime + (notes.length - 1) * 0.28;
+    g2.gain.setValueAtTime(0, tLast);
+    g2.gain.linearRampToValueAtTime(0.18, tLast + 0.06);
+    g2.gain.exponentialRampToValueAtTime(0.001, tLast + 1.1);
+    osc2.start(tLast); osc2.stop(tLast + 1.2);
+  }catch(e){ console.warn('Audio no disponible',e); }
+}
+
+// Pedir permiso de notificaciones (se llama la primera vez que arranca el pomo)
+function askNotifPermission(){
+  if('Notification' in window && Notification.permission === 'default'){
+    Notification.requestPermission();
   }
 }
-function resetPom(){clearInterval(S.pomInterval);S.pomRunning=false;S.pomSec=PT[S.pomType];document.getElementById('pomBtn').textContent='▶ Iniciar';updatePomUI();}
-function updatePomUI(){
-  const m=Math.floor(S.pomSec/60),s=S.pomSec%60;
-  document.getElementById('pomTimeEl').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-  document.getElementById('pomRing').setAttribute('stroke-dashoffset',502*(1-S.pomSec/PT[S.pomType]));
+
+function sendNotif(title, body){
+  try{
+    if('Notification' in window && Notification.permission === 'granted'){
+      new Notification(title, { body, icon: '', tag:'pomo' });
+    }
+  }catch(e){}
 }
+
+function onPomComplete(){
+  const isFoco = S.pomType === 'foco';
+  // Limpiar timer
+  if(pomWorker) pomWorker.postMessage({cmd:'stop'});
+  else clearInterval(S.pomInterval);
+  S.pomRunning = false; S.pomEndTime = 0;
+  // Sesiones
+  if(isFoco){ S.pomSes++; }
+  saveLocal();
+  const sesEl = document.getElementById('pomSesEl');
+  if(sesEl) sesEl.textContent = 'Sesiones completadas: ' + S.pomSes;
+  const btn = document.getElementById('pomBtn');
+  if(btn) btn.textContent = '▶ Iniciar';
+  // Título del tab
+  document.title = 'Agenda Psicopé';
+  // Sonido
+  playChime(isFoco);
+  // Notificación
+  const msg = isFoco
+    ? '¡Sesión de foco completada! Tomá un descanso 🌿'
+    : '¡Descanso terminado! Volvé a estudiar 📚';
+  sendNotif('🍅 Pomodoro', msg);
+  resetPom();
+}
+
+function setPomT(t){
+  if(S.pomRunning) resetPom();
+  S.pomType = t; S.pomSec = PT[t];
+  ['foco','corto','largo'].forEach((x,i)=>
+    document.getElementById('pm'+(i+1)).classList.toggle('active', x===t));
+  document.getElementById('pomLblEl').textContent = PL[t];
+  updatePomUI();
+}
+
+function togglePom(){
+  if(S.pomRunning){
+    // PAUSAR
+    if(pomWorker) pomWorker.postMessage({cmd:'stop'});
+    else clearInterval(S.pomInterval);
+    S.pomRunning = false; S.pomEndTime = 0;
+    saveLocal();
+    document.getElementById('pomBtn').textContent = '▶ Continuar';
+    document.title = 'Agenda Psicopé';
+  } else {
+    // INICIAR / CONTINUAR
+    askNotifPermission();
+    S.pomEndTime = Date.now() + S.pomSec * 1000;
+    S.pomRunning = true;
+    saveLocal();
+    document.getElementById('pomBtn').textContent = '⏸ Pausar';
+    if(pomWorker){
+      pomWorker.postMessage({cmd:'start', endTime: S.pomEndTime});
+    } else {
+      // Fallback a setInterval si Worker no está disponible
+      S.pomInterval = setInterval(()=>{
+        S.pomSec = Math.max(0, Math.ceil((S.pomEndTime - Date.now()) / 1000));
+        updatePomUI();
+        if(S.pomSec <= 0){ clearInterval(S.pomInterval); onPomComplete(); }
+      }, 500);
+    }
+  }
+}
+
+function resetPom(){
+  if(pomWorker) pomWorker.postMessage({cmd:'stop'});
+  else clearInterval(S.pomInterval);
+  S.pomRunning = false; S.pomEndTime = 0;
+  S.pomSec = PT[S.pomType];
+  saveLocal();
+  const btn = document.getElementById('pomBtn');
+  if(btn) btn.textContent = '▶ Iniciar';
+  document.title = 'Agenda Psicopé';
+  updatePomUI();
+}
+
+function updatePomUI(){
+  const m = Math.floor(S.pomSec/60), s = S.pomSec % 60;
+  const txt = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  const tEl = document.getElementById('pomTimeEl');
+  if(tEl) tEl.textContent = txt;
+  const ring = document.getElementById('pomRing');
+  if(ring) ring.setAttribute('stroke-dashoffset', 502*(1 - S.pomSec/PT[S.pomType]));
+  // Actualizar título del tab mientras corre (se ve en el celular en notif)
+  if(S.pomRunning) document.title = txt + ' 🍅 — Psicopé';
+}
+
+// Sincronizar cuando el usuario vuelve a la tab/app
+document.addEventListener('visibilitychange', ()=>{
+  if(!document.hidden && S.pomRunning && S.pomEndTime){
+    S.pomSec = Math.max(0, Math.ceil((S.pomEndTime - Date.now()) / 1000));
+    updatePomUI();
+    if(S.pomSec <= 0) onPomComplete();
+  }
+});
 
 // ── CALENDAR ─────────────────────────────────────────────────
 function prevMonth(){S.curMonth--;if(S.curMonth<0){S.curMonth=11;S.curYear--;}renderCal();}
