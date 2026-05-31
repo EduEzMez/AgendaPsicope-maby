@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Agenda Psicopé</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+/* ── RESET & ROOT ─────────────────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#FDFAF6;--bg2:#F5F0E8;--bg3:#EDE8DE;--bg4:#E4DDD2;
+  --surface:#FFFFFF;--surface2:#FAF7F2;--surface3:#F2EDE4;
+  --text:#2C2825;--text2:#6B6560;--text3:#9B9590;--text4:#B8B3AC;
+  --border:#E8E3D8;--border2:#D5CFC3;--border3:#C2BBB0;
+  --sage:#6B9E70;--sage-l:#EDF4EE;--sage-d:#3D6B42;--sage-2:#8BB890;
+  --terra:#C4714E;--terra-l:#FAF0EB;--terra-d:#7A3B1E;
+  --lav:#8B7EC0;--lav-l:#F2EFF9;--lav-d:#4A3B8A;
+  --gold:#C8942E;--gold-l:#FBF5E6;--gold-d:#7A5610;
+  --rose:#C86878;--rose-l:#FBF0F3;--rose-d:#7A2838;
+  --sky:#5A98C0;--sky-l:#EEF5FB;--sky-d:#1E4A6A;
+  --teal:#3A8080;--teal-l:#EAF4F4;
+  --r:14px;--r-sm:10px;--r-xs:7px;--r-lg:20px;
+  --sh:0 2px 20px rgba(44,40,37,0.10);--sh-sm:0 1px 6px rgba(44,40,37,0.07);--sh-lg:0 8px 40px rgba(44,40,37,0.14);
+  --fd:'Playfair Display',serif;--fb:'Nunito',sans-serif;
+  --nav-h:72px;
+}
+.dark{
+  --bg:#181512;--bg2:#201D19;--bg3:#2A2620;--bg4:#333028;
+  --surface:#232019;--surface2:#2C2924;--surface3:#35312B;
+  --text:#F0EBE3;--text2:#B0AB9F;--text3:#706860;--text4:#504840;
+  --border:#38342C;--border2:#484038;--border3:#585048;
+  --sage:#6B9E70;--sage-l:#1A2A1C;--sage-d:#8BBF90;
+  --terra:#C4714E;--terra-l:#2A1810;--terra-d:#E89070;
+  --lav:#8B7EC0;--lav-l:#1C1A30;--lav-d:#AFA0E0;
+  --gold:#C8942E;--gold-l:#2A2008;--gold-d:#E0B060;
+  --rose:#C86878;--rose-l:#2A1018;--rose-d:#E090A0;
+  --sky:#5A98C0;--sky-l:#101E30;--sky-d:#80B8E0;
+  --teal:#3A8080;--teal-l:#101E1E;
+}
+
+/* ── BASE ─────────────────────────────────────────────────────────────────── */
+html{height:100%;overflow:hidden}
+body{font-family:var(--fb);background:var(--bg);color:var(--text);height:100%;overflow:hidden;transition:background .35s,color .35s}
+#app{max-width:430px;margin:0 auto;height:100%;display:flex;flex-direction:column;position:relative}
+.views{flex:1;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--nav-h) + 16px)}
+.view{display:none;padding:16px 18px;animation:fadeUp .28s ease both}
+.view.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HEADER ───────────────────────────────────────────────────────────────── */
+.header{padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;position:relative;z-index:10}
+.logo-wrap{display:flex;flex-direction:column;line-height:1}
+.logo-main{font-family:var(--fd);font-size:22px;color:var(--text);letter-spacing:-.3px}
+.logo-main em{color:var(--sage);font-style:normal}
+.logo-sub{font-size:10px;color:var(--text4);letter-spacing:1.2px;text-transform:uppercase;font-weight:600;margin-top:1px}
+.h-actions{display:flex;gap:8px;align-items:center}
+.ic-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s;color:var(--text2)}
+.ic-btn:hover{background:var(--bg2);border-color:var(--border2)}
+.ic-btn.add-btn{background:var(--sage);border-color:var(--sage);color:#fff;font-size:20px;font-weight:300}
+.ic-btn.add-btn:hover{background:var(--sage-d)}
+.admin-pill{background:var(--gold);color:#fff;font-size:9px;padding:3px 8px;border-radius:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+
+/* ── NAV ──────────────────────────────────────────────────────────────────── */
+.nav{height:var(--nav-h);background:var(--surface);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;flex-shrink:0;padding:0 4px 8px}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:8px 12px;border-radius:var(--r-sm);transition:all .2s;border:none;background:none;color:var(--text3);font-family:var(--fb);font-size:10px;font-weight:600;letter-spacing:.3px;min-width:60px}
+.nav-item .ni{font-size:22px;transition:transform .2s}
+.nav-item.active{color:var(--sage)}
+.nav-item.active .ni{transform:scale(1.12)}
+.nav-item.active .nav-label{color:var(--sage)}
+
+/* ── CARDS ────────────────────────────────────────────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--sh-sm)}
+.card-title{font-family:var(--fd);font-size:17px;color:var(--text);margin-bottom:12px;line-height:1.3}
+.section-lbl{font-size:10px;font-weight:700;color:var(--text4);letter-spacing:1.2px;text-transform:uppercase;margin:14px 0 8px}
+
+/* ── BADGES ───────────────────────────────────────────────────────────────── */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+
+/* ── BUTTONS ──────────────────────────────────────────────────────────────── */
+.btn{padding:12px 20px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:var(--fb);font-size:14px;font-weight:600;transition:all .2s;letter-spacing:.2px}
+.btn-p{background:var(--sage);color:#fff;width:100%}
+.btn-p:hover{background:var(--sage-d);transform:translateY(-1px)}
+.btn-p:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-s{background:var(--bg2);color:var(--text2);border:1px solid var(--border);width:100%;margin-top:8px}
+.btn-s:hover{background:var(--bg3)}
+.btn-danger{background:var(--rose-l);color:var(--rose-d);border:1px solid var(--rose);width:100%;margin-top:8px}
+.btn-danger:hover{background:var(--rose);color:#fff}
+
+/* ── FORMS ────────────────────────────────────────────────────────────────── */
+.fg{margin-bottom:13px}
+.fl{display:block;font-size:11px;color:var(--text3);margin-bottom:5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.fi{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--bg2);color:var(--text);font-family:var(--fb);font-size:14px;outline:none;transition:border .2s}
+.fi:focus{border-color:var(--sage);background:var(--surface)}
+select.fi{cursor:pointer}
+
+/* ── PASSWORD ─────────────────────────────────────────────────────────────── */
+.pw-wrap{position:relative}
+.pw-wrap .fi{padding-right:42px}
+.pw-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--text3);padding:8px;line-height:1;border-radius:6px;transition:background .15s}
+.pw-toggle:hover{background:var(--bg3)}
+
+/* ── TOGGLE GROUP ─────────────────────────────────────────────────────────── */
+.tg{display:flex;background:var(--bg2);border-radius:var(--r-sm);padding:3px;gap:3px;margin-bottom:14px}
+.tb{flex:1;padding:8px 4px;border:none;border-radius:8px;background:transparent;cursor:pointer;font-family:var(--fb);font-size:12px;color:var(--text3);transition:all .2s;font-weight:600}
+.tb.active{background:var(--surface);color:var(--text);box-shadow:var(--sh-sm)}
+
+/* ── MODAL ────────────────────────────────────────────────────────────────── */
+.mo{position:fixed;inset:0;background:rgba(20,16,12,.55);z-index:200;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease;backdrop-filter:blur(2px)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.m{background:var(--surface);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:20px 18px 32px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;animation:slideUp .3s cubic-bezier(.2,.8,.3,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mh{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 20px}
+.mt{font-family:var(--fd);font-size:22px;margin-bottom:18px;color:var(--text)}
+
+/* ── AUTH ─────────────────────────────────────────────────────────────────── */
+.auth-screen{position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto;display:none}
+.auth-screen.show{display:block}
+.auth-wrap{max-width:430px;margin:0 auto;padding:40px 24px 30px;min-height:100%;display:flex;flex-direction:column;justify-content:center}
+.auth-brand{text-align:center;margin-bottom:28px}
+.auth-brand .logo-main{font-size:32px}
+.auth-brand .logo-sub{margin-top:6px}
+.auth-msg{font-size:13px;margin-top:12px;padding:10px 12px;border-radius:var(--r-sm);display:none;line-height:1.4;font-weight:500}
+.auth-msg.err{display:block;background:var(--rose-l);color:var(--rose-d);border:1px solid var(--rose)}
+.auth-msg.ok{display:block;background:var(--sage-l);color:var(--sage-d);border:1px solid var(--sage)}
+.auth-foot{text-align:center;margin-top:16px;font-size:12px;color:var(--text3);font-weight:500}
+
+/* ── TODAY ALERT (eventos + cumples) ─────────────────────────────────────── */
+.today-alert{border-radius:var(--r);padding:14px 16px;margin-bottom:12px;background:var(--gold-l);border:1px solid var(--gold);font-size:13px;color:var(--gold-d);font-weight:500;line-height:1.55}
+.today-alert .ta-hdr{font-family:var(--fd);font-size:15px;color:var(--gold-d);margin-bottom:6px;font-weight:600}
+.today-alert .ta-item{display:flex;align-items:center;gap:7px;padding:3px 0}
+
+/* ── ADMIN ────────────────────────────────────────────────────────────────── */
+.admin-user-row{display:flex;align-items:center;gap:10px;padding:11px 12px;background:var(--surface2);border-radius:var(--r-sm);margin-bottom:8px}
+.admin-user-row .uav{width:38px;height:38px;border-radius:50%;background:var(--lav-l);color:var(--lav-d);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:600;font-size:14px;flex-shrink:0;border:2px solid var(--lav)}
+.admin-user-row .uinfo{flex:1;min-width:0}
+.admin-user-row .uname{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-user-row .umail{font-size:11px;color:var(--text3);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-user-row .ubtn{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:10px;font-weight:700;padding:6px 10px;border-radius:8px;cursor:pointer;letter-spacing:.4px;text-transform:uppercase}
+.admin-user-row .ubtn.is-admin{background:var(--gold);color:#fff;border-color:var(--gold)}
+
+/* ── ACCOUNT CARD ─────────────────────────────────────────────────────────── */
+.acct-card{display:flex;align-items:center;gap:14px;padding:18px;background:linear-gradient(135deg,var(--sage-l),var(--lav-l));border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px}
+.acct-av{width:54px;height:54px;border-radius:50%;background:var(--sage);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:600;font-size:22px;flex-shrink:0;box-shadow:0 4px 12px rgba(107,158,112,.3)}
+.acct-info{flex:1;min-width:0}
+.acct-name{font-family:var(--fd);font-size:17px;color:var(--text);line-height:1.2;margin-bottom:3px}
+.acct-mail{font-size:11px;color:var(--text2);font-weight:500;word-break:break-all}
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/*  HOME                                                                      */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+.banner{border-radius:var(--r);padding:20px 18px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--sage) 0%,#5a8f60 100%);position:relative;overflow:hidden}
+.banner::before{content:'';position:absolute;right:-20px;top:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.08)}
+.banner::after{content:'';position:absolute;right:20px;bottom:-30px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.05)}
+.ban-info h3{font-family:var(--fd);font-size:20px;color:#fff;line-height:1.2}
+.ban-info p{font-size:12px;color:rgba(255,255,255,.82);margin-top:4px;font-weight:500}
+.ban-count{background:rgba(255,255,255,.2);border-radius:var(--r-sm);padding:10px 16px;text-align:center;flex-shrink:0;backdrop-filter:blur(4px)}
+.ban-num{font-family:var(--fd);font-size:30px;color:#fff;line-height:1}
+.ban-lbl{font-size:10px;color:rgba(255,255,255,.82);margin-top:2px;font-weight:600;letter-spacing:.5px}
+.bday-alert{border-radius:var(--r);padding:14px 16px;margin-bottom:12px;background:var(--rose-l);border:1px solid var(--rose);font-size:14px;color:var(--rose-d);font-weight:500;line-height:1.5}
+.mood-row{display:flex;gap:6px}
+.mb{flex:1;aspect-ratio:1;border-radius:var(--r-sm);border:2px solid var(--border);background:var(--bg2);cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.mb.sel{border-color:var(--sage);background:var(--sage-l);transform:scale(1.1);box-shadow:0 2px 8px rgba(107,158,112,.25)}
+.quote-card{background:linear-gradient(135deg,var(--sage-l),var(--lav-l));border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:12px;text-align:center;position:relative}
+.qt{font-family:var(--fd);font-style:italic;font-size:14px;color:var(--sage-d);line-height:1.7}
+.qa{font-size:11px;color:var(--text3);margin-top:8px;font-weight:600;letter-spacing:.5px}
+.ev-item{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:var(--surface2);border-radius:var(--r-sm);margin-bottom:8px;border-left:3px solid var(--sage);transition:all .2s;cursor:pointer}
+.ev-item:hover{transform:translateX(3px);box-shadow:var(--sh-sm)}
+.ev-time{font-size:11px;color:var(--text3);min-width:48px;padding-top:2px;font-weight:700;white-space:nowrap}
+.ev-title{font-size:14px;color:var(--text);font-weight:600;line-height:1.3}
+.ev-meta{font-size:11px;color:var(--text3);margin-top:3px;font-weight:500}
+.ev-author{font-size:10px;color:var(--text4);margin-top:3px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+.goal-item{display:flex;align-items:center;gap:10px;padding:11px 12px;background:var(--surface2);border-radius:var(--r-sm);margin-bottom:8px;cursor:pointer;transition:all .15s}
+.goal-item:hover{background:var(--bg3)}
+.gc{width:22px;height:22px;border-radius:50%;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.gc.done{background:var(--sage);border-color:var(--sage)}
+.gt{font-size:14px;color:var(--text);flex:1;font-weight:500}
+.gt.done{text-decoration:line-through;color:var(--text3)}
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/*  HORARIO                                                                   */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+.dia-block{margin-bottom:18px}
+.dia-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.dia-name{font-family:var(--fd);font-size:18px;color:var(--text)}
+.hoy-pill{background:var(--sage);color:#fff;font-size:10px;padding:3px 10px;border-radius:12px;font-weight:700;letter-spacing:.5px}
+.libre-box{background:var(--bg2);border:1px dashed var(--border2);border-radius:var(--r-sm);padding:14px;text-align:center;color:var(--text3);font-size:13px;font-weight:500}
+.clase-card{display:flex;border-radius:var(--r-sm);margin-bottom:8px;overflow:hidden;background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:all .2s;box-shadow:var(--sh-sm)}
+.clase-card:hover{box-shadow:var(--sh);transform:translateY(-1px)}
+.clase-bar{width:5px;flex-shrink:0}
+.clase-body{flex:1;padding:13px 14px}
+.clase-hora{font-size:11px;color:var(--text3);font-weight:700;margin-bottom:4px;letter-spacing:.5px}
+.clase-mat{font-size:15px;font-weight:700;color:var(--text);line-height:1.3;font-family:var(--fd)}
+.clase-doc{font-size:12px;color:var(--text3);margin-top:4px;font-weight:500}
+.clase-arrow{display:flex;align-items:center;padding:0 16px;color:var(--text4);font-size:18px}
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/*  MATERIAS                                                                  */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;text-align:center;box-shadow:var(--sh-sm)}
+.sn{font-family:var(--fd);font-size:32px;color:var(--text);line-height:1}
+.sl{font-size:11px;color:var(--text3);margin-top:4px;font-weight:600;letter-spacing:.3px}
+.mat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;box-shadow:var(--sh-sm)}
+.mat-card:hover{box-shadow:var(--sh);transform:translateY(-1px)}
+.mat-bar{position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:3px 0 0 3px}
+.mat-name{font-size:15px;font-weight:700;color:var(--text);font-family:var(--fd)}
+.mat-meta{font-size:12px;color:var(--text3);margin-top:3px;font-weight:500}
+.mat-notes{font-size:12px;color:var(--text3);margin-top:8px;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.color-sw{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .18s}
+.sw.sel{border-color:var(--text);transform:scale(1.18)}
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/*  EXTRAS                                                                    */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/* Pomodoro */
+.pom-wrap{position:relative;width:186px;height:186px;margin:0 auto}
+.pom-wrap svg{transform:rotate(-90deg)}
+.pom-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pom-t{font-family:var(--fd);font-size:46px;color:var(--text);line-height:1}
+.pom-l{font-size:12px;color:var(--text3);margin-top:4px;font-weight:600;letter-spacing:.5px}
+/* Diary */
+.diary-entry{background:var(--surface2);border-radius:var(--r-sm);padding:14px;margin-bottom:10px;border-left:3px solid var(--lav)}
+.de-date{font-size:11px;color:var(--text3);margin-bottom:5px;font-weight:700;letter-spacing:.3px}
+.de-text{font-size:13px;color:var(--text2);line-height:1.6}
+/* Birthdays */
+.bday-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;box-shadow:var(--sh-sm)}
+.bday-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-family:var(--fd);font-weight:600;flex-shrink:0;background:var(--rose-l);color:var(--rose-d);border:2px solid var(--rose)}
+.bday-author{font-size:10px;color:var(--text4);font-weight:600;letter-spacing:.3px;text-transform:uppercase;margin-top:3px}
+/* Calendar */
+.cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-month{font-family:var(--fd);font-size:18px;color:var(--text)}
+.cal-btn{background:var(--bg2);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.cal-btn:hover{background:var(--bg3)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-dl{text-align:center;font-size:10px;color:var(--text4);padding:4px 0;font-weight:700;letter-spacing:.5px}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:var(--r-xs);cursor:pointer;position:relative;font-size:13px;transition:all .15s;color:var(--text2);font-weight:500}
+.cal-day:hover{background:var(--bg2)}
+.cal-day.today{background:var(--sage);color:#fff;font-weight:700;box-shadow:0 2px 8px rgba(107,158,112,.35)}
+.cal-day.sel{background:var(--bg3);color:var(--text);font-weight:700}
+.cal-day.om{opacity:.3}
+.cal-dot{width:4px;height:4px;border-radius:50%;position:absolute;bottom:3px}
+.cal-dots{display:flex;gap:2px;position:absolute;bottom:3px}
+/* Hábitos */
+.hab-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:10px 12px;background:var(--surface2);border-radius:var(--r-sm)}
+.hab-dots{display:flex;gap:4px;margin-left:auto}
+.hd{width:24px;height:24px;border-radius:50%;border:2px solid var(--border2);cursor:pointer;transition:all .15s;background:var(--bg2)}
+.hd.done{background:var(--sage);border-color:var(--sage)}
+
+/* ── VACACIONES ───────────────────────────────────────────────────────────── */
+.vac-card{border-radius:var(--r);padding:16px 18px;margin-bottom:12px;display:flex;align-items:center;gap:14px;border:1px solid;position:relative;overflow:hidden}
+.vac-card::before{content:'';position:absolute;right:-16px;top:-16px;width:80px;height:80px;border-radius:50%;opacity:.12}
+.vac-icon{font-size:32px;flex-shrink:0;line-height:1}
+.vac-info{flex:1;min-width:0}
+.vac-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.vac-name{font-family:var(--fd);font-size:16px;color:var(--text);line-height:1.2;margin-bottom:2px}
+.vac-dates{font-size:11px;font-weight:500;margin-top:2px}
+.vac-count-wrap{text-align:center;flex-shrink:0}
+.vac-num{font-family:var(--fd);font-size:36px;line-height:1}
+.vac-dias{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-top:1px}
+.vac-prog-bar{height:4px;border-radius:2px;margin-top:10px;background:var(--border);overflow:hidden}
+.vac-prog-fill{height:100%;border-radius:2px;transition:width .5s ease}
+
+/* ── SCROLLBAR ────────────────────────────────────────────────────────────── */
+.views::-webkit-scrollbar{width:3px}
+.views::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── SYNC HINT ────────────────────────────────────────────────────────────── */
+.sync-hint{font-size:11px;color:var(--text3);text-align:center;padding:8px;font-weight:500}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!--  AUTH SCREEN (login / registro)                                       -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<div id="authScreen" class="auth-screen show">
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <div class="logo-main">Agenda <em>Psicopé</em></div>
+      <div class="logo-sub">Psicopedagogía · UE</div>
+    </div>
+
+    <div class="card" style="padding:22px">
+      <div class="tg">
+        <button class="tb active" id="tabLogin" onclick="setAuthTab('login')">Iniciar sesión</button>
+        <button class="tb" id="tabReg" onclick="setAuthTab('reg')">Registrarse</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="loginForm">
+        <div class="fg">
+          <label class="fl">Email</label>
+          <input type="email" id="loginEmail" class="fi" autocomplete="email" placeholder="tu@email.com">
+        </div>
+        <div class="fg">
+          <label class="fl">Contraseña</label>
+          <div class="pw-wrap">
+            <input type="password" id="loginPw" class="fi" autocomplete="current-password" placeholder="••••••••">
+            <button type="button" class="pw-toggle" onclick="togglePw('loginPw',this)" title="Mostrar/Ocultar">👁️</button>
+          </div>
+        </div>
+        <button onclick="doLogin()" class="btn btn-p" id="loginBtn">Iniciar sesión</button>
+        <div id="loginMsg" class="auth-msg"></div>
+      </div>
+
+      <!-- REGISTRO -->
+      <div id="regForm" style="display:none">
+        <div class="fg">
+          <label class="fl">Nombre completo</label>
+          <input type="text" id="regName" class="fi" autocomplete="name" placeholder="Tu nombre">
+        </div>
+        <div class="fg">
+          <label class="fl">Email</label>
+          <input type="email" id="regEmail" class="fi" autocomplete="email" placeholder="tu@email.com">
+        </div>
+        <div class="fg">
+          <label class="fl">Contraseña</label>
+          <div class="pw-wrap">
+            <input type="password" id="regPw" class="fi" autocomplete="new-password" placeholder="Mínimo 6 caracteres">
+            <button type="button" class="pw-toggle" onclick="togglePw('regPw',this)" title="Mostrar/Ocultar">👁️</button>
+          </div>
+        </div>
+        <button onclick="doRegister()" class="btn btn-p" id="regBtn">Crear cuenta</button>
+        <div id="regMsg" class="auth-msg"></div>
+      </div>
+    </div>
+
+    <div class="auth-foot">El primer usuario registrado será el super admin 👑</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!--  APP                                                                  -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<div id="app">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo-wrap">
+    <div class="logo-main">Agenda <em>Psicopé</em></div>
+    <div class="logo-sub">Psicopedagogía · UE</div>
+  </div>
+  <div class="h-actions">
+    <span class="admin-pill" id="adminPill" style="display:none">👑 Admin</span>
+    <button class="ic-btn" id="darkBtn" title="Modo oscuro">🌙</button>
+    <button class="ic-btn add-btn" id="addBtn" title="Nuevo evento">+</button>
+  </div>
+</div>
+
+<!-- VIEWS -->
+<div class="views">
+
+  <!-- ── HOME ─────────────────────────────────────────────────────────────── -->
+  <div id="vHome" class="view active">
+
+    <div class="banner">
+      <div class="ban-info">
+        <h3 id="greetEl">¡Buen día! ✨</h3>
+        <p id="dateEl">cargando...</p>
+      </div>
+      <div class="ban-count">
+        <div class="ban-num" id="clasesCountEl">0</div>
+        <div class="ban-lbl">clases hoy</div>
+      </div>
+    </div>
+
+    <div id="todayAlertEl" style="display:none" class="today-alert"></div>
+    <div id="bdayAlertEl" style="display:none" class="bday-alert"></div>
+
+    <!-- VACACIONES -->
+    <div id="vacCard"></div>
+
+    <div class="card">
+      <div class="card-title">¿Cómo te sentís hoy?</div>
+      <div class="mood-row" id="moodRow">
+        <button class="mb" onclick="setMood('😔',this)">😔</button>
+        <button class="mb" onclick="setMood('😐',this)">😐</button>
+        <button class="mb" onclick="setMood('🙂',this)">🙂</button>
+        <button class="mb" onclick="setMood('😄',this)">😄</button>
+        <button class="mb" onclick="setMood('🌟',this)">🌟</button>
+      </div>
+    </div>
+
+    <div class="quote-card">
+      <div class="qt" id="quoteEl"></div>
+      <div class="qa" id="authorEl"></div>
+    </div>
+
+    <div class="card-title" style="padding:0 0 8px">Clases de hoy</div>
+    <div id="todayEl"></div>
+
+    <div class="card-title" style="padding:8px 0">Próximas entregas y parciales</div>
+    <div id="upcomingEl"></div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="card-title" style="margin:0">Objetivos de la semana</div>
+        <button onclick="addGoal()" style="background:none;border:none;color:var(--sage);cursor:pointer;font-size:13px;font-weight:700">+ Agregar</button>
+      </div>
+      <div id="goalsEl"></div>
+    </div>
+
+    <!-- Hábitos de estudio -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="card-title" style="margin:0">Hábitos de estudio</div>
+        <span style="font-size:11px;color:var(--text3);font-weight:600" id="habWeekLbl"></span>
+      </div>
+      <div id="habitsEl"></div>
+    </div>
+  </div>
+
+  <!-- ── HORARIO ────────────────────────────────────────────────────────────── -->
+  <div id="vHorario" class="view">
+    <div class="card-title" style="margin-bottom:4px">Horario semanal</div>
+    <div id="horarioEl"></div>
+  </div>
+
+  <!-- ── MATERIAS ───────────────────────────────────────────────────────────── -->
+  <div id="vMaterias" class="view">
+    <div class="stats-row">
+      <div class="stat-card"><div class="sn">8</div><div class="sl">Materias</div></div>
+      <div class="stat-card"><div class="sn" style="color:var(--sage)">8</div><div class="sl">Activas</div></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="card-title" style="margin:0">Mis materias</div>
+      <button onclick="showAddSubject()" style="background:var(--sage);color:#fff;border:none;padding:8px 14px;border-radius:var(--r-sm);cursor:pointer;font-size:13px;font-family:var(--fb);font-weight:700">+ Nueva</button>
+    </div>
+    <div id="materiasEl"></div>
+  </div>
+
+  <!-- ── EXTRAS ─────────────────────────────────────────────────────────────── -->
+  <div id="vExtras" class="view">
+    <div class="tg" style="overflow-x:auto;flex-wrap:nowrap">
+      <button class="tb active" id="xt1" onclick="setExtra('pom')">🍅 Pomodoro</button>
+      <button class="tb" id="xt2" onclick="setExtra('cal')">📅 Agenda</button>
+      <button class="tb" id="xt3" onclick="setExtra('diario')">📖 Diario</button>
+      <button class="tb" id="xt4" onclick="setExtra('cumple')">🎂 Cumples</button>
+      <button class="tb" id="xt5" onclick="setExtra('cuenta')">⚙️ Cuenta</button>
+    </div>
+
+    <!-- POMODORO -->
+    <div id="exPom">
+      <div class="card" style="text-align:center;padding:22px 16px">
+        <div class="card-title">Temporizador Pomodoro</div>
+        <div class="tg">
+          <button class="tb active" id="pm1" onclick="setPomT('foco')">Foco 25'</button>
+          <button class="tb" id="pm2" onclick="setPomT('corto')">Descanso 5'</button>
+          <button class="tb" id="pm3" onclick="setPomT('largo')">Largo 15'</button>
+        </div>
+        <div class="pom-wrap">
+          <svg width="186" height="186" viewBox="0 0 186 186">
+            <circle cx="93" cy="93" r="80" fill="none" stroke="var(--border)" stroke-width="9"/>
+            <circle id="pomRing" cx="93" cy="93" r="80" fill="none" stroke="var(--sage)" stroke-width="9"
+              stroke-dasharray="502" stroke-dashoffset="0" stroke-linecap="round" style="transition:stroke-dashoffset 1s linear"/>
+          </svg>
+          <div class="pom-inner">
+            <div class="pom-t" id="pomTimeEl">25:00</div>
+            <div class="pom-l" id="pomLblEl">TIEMPO DE FOCO</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:20px">
+          <button onclick="togglePom()" class="btn btn-p" id="pomBtn" style="width:auto;padding:13px 36px;font-size:15px">▶ Iniciar</button>
+          <button onclick="resetPom()" class="btn btn-s" style="width:auto;margin:0;padding:13px 18px;font-size:18px">↺</button>
+        </div>
+        <div style="margin-top:14px;color:var(--text3);font-size:12px;font-weight:600;letter-spacing:.3px" id="pomSesEl">Sesiones completadas: 0</div>
+      </div>
+    </div>
+
+    <!-- AGENDA / CALENDARIO -->
+    <div id="exCal" style="display:none">
+      <div class="card">
+        <div class="cal-hdr">
+          <button class="cal-btn" onclick="prevMonth()">‹</button>
+          <div class="cal-month" id="calMonthEl"></div>
+          <button class="cal-btn" onclick="nextMonth()">›</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div style="display:flex;gap:14px;justify-content:center;margin-top:12px;font-size:11px;color:var(--text3);font-weight:600">
+          <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--sage);vertical-align:middle;margin-right:4px"></span>Evento</span>
+          <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--rose);vertical-align:middle;margin-right:4px"></span>Cumpleaños</span>
+        </div>
+      </div>
+      <div id="selDayEl"></div>
+    </div>
+
+    <!-- DIARIO -->
+    <div id="exDiario" style="display:none">
+      <div class="card">
+        <div class="card-title">Reflexión de hoy</div>
+        <div class="fg"><textarea class="fi" id="diaryInput" rows="4" placeholder="¿Qué aprendiste hoy? ¿Cómo te sentiste en las clases? ¿Qué querés recordar?"></textarea></div>
+        <button onclick="saveDiary()" class="btn btn-p">Guardar reflexión</button>
+      </div>
+      <div id="diaryListEl"></div>
+    </div>
+
+    <!-- CUMPLEAÑOS -->
+    <div id="exCumple" style="display:none">
+      <div class="card">
+        <div class="card-title">Agregar cumpleaños</div>
+        <div class="fg"><label class="fl">Nombre</label><input type="text" id="bdayName" class="fi" placeholder="Compañero/a"></div>
+        <div class="fg"><label class="fl">Fecha</label><input type="date" id="bdayDate" class="fi"></div>
+        <button onclick="addBday()" class="btn btn-p">Guardar cumpleaños</button>
+        <div id="bdayMsg" class="auth-msg"></div>
+        <div class="sync-hint">Los cumpleaños son visibles para todos los registrados.<br>Si alguien ya cargó el mismo, no se duplica.</div>
+      </div>
+      <div id="bdayListEl"></div>
+    </div>
+
+    <!-- CUENTA -->
+    <div id="exCuenta" style="display:none">
+      <div class="acct-card">
+        <div class="acct-av" id="acctAv">U</div>
+        <div class="acct-info">
+          <div class="acct-name" id="acctName">—</div>
+          <div class="acct-mail" id="acctMail">—</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Mi cuenta</div>
+        <div id="acctAdminBox" style="display:none;margin-bottom:10px">
+          <div style="background:var(--gold-l);border:1px solid var(--gold);border-radius:var(--r-sm);padding:12px;font-size:13px;color:var(--gold-d);font-weight:600;line-height:1.5">
+            👑 Sos <strong>super administrador/a</strong>. Podés ver y gestionar a todos los usuarios y borrar cualquier evento o cumpleaños.
+          </div>
+          <button onclick="showAdminPanel()" class="btn btn-p" style="margin-top:10px;background:var(--gold);">Panel de Admin</button>
+        </div>
+        <button onclick="doLogout()" class="btn btn-danger">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /views -->
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-item active" onclick="showView('Home')" id="navHome">
+    <span class="ni">🏠</span><span class="nav-label">Inicio</span>
+  </button>
+  <button class="nav-item" onclick="showView('Horario')" id="navHorario">
+    <span class="ni">🗓️</span><span class="nav-label">Horario</span>
+  </button>
+  <button class="nav-item" onclick="showView('Materias')" id="navMaterias">
+    <span class="ni">📚</span><span class="nav-label">Materias</span>
+  </button>
+  <button class="nav-item" onclick="showView('Extras')" id="navExtras">
+    <span class="ni">✨</span><span class="nav-label">Extras</span>
+  </button>
+</nav>
+
+<!-- ── MODALS ──────────────────────────────────────────────────────────────── -->
+
+<!-- ADD EVENT -->
+<div id="addModal" class="mo" style="display:none">
+  <div class="m">
+    <div class="mh"></div>
+    <div class="mt">Nuevo evento</div>
+    <div class="fg"><label class="fl">Título</label><input type="text" id="evTitle" class="fi" placeholder="Ej: Parcial de Psicodiagnóstico"></div>
+    <div class="fg"><label class="fl">Fecha</label><input type="date" id="evDate" class="fi"></div>
+    <div class="fg"><label class="fl">Hora</label><input type="time" id="evTime" class="fi"></div>
+    <div class="fg"><label class="fl">Materia</label><select id="evSubject" class="fi"><option value="">Sin materia</option></select></div>
+    <div class="fg"><label class="fl">Tipo</label>
+      <select id="evType" class="fi">
+        <option value="clase">🎓 Clase</option>
+        <option value="parcial">📝 Parcial / Examen</option>
+        <option value="entrega">📄 Entrega / TP</option>
+        <option value="lectura">📖 Lectura obligatoria</option>
+        <option value="reunion">🤝 Reunión de grupo</option>
+        <option value="otro">📌 Otro</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Notas</label><textarea id="evNotes" class="fi" rows="2" placeholder="Detalles adicionales..."></textarea></div>
+    <div class="sync-hint">Este evento será visible en la agenda de todos los registrados.</div>
+    <button onclick="saveEvent()" class="btn btn-p" style="margin-top:6px" id="saveEvBtn">Guardar evento</button>
+    <button onclick="closeM('addModal')" class="btn btn-s">Cancelar</button>
+  </div>
+</div>
+
+<!-- DETAIL -->
+<div id="detailModal" class="mo" style="display:none">
+  <div class="m"><div class="mh"></div><div id="detailContent"></div><button onclick="closeM('detailModal')" class="btn btn-s">Cerrar</button></div>
+</div>
+
+<!-- ADD SUBJECT -->
+<div id="subjectModal" class="mo" style="display:none">
+  <div class="m">
+    <div class="mh"></div>
+    <div class="mt">Nueva materia</div>
+    <div class="fg"><label class="fl">Nombre</label><input type="text" id="subName" class="fi"></div>
+    <div class="fg"><label class="fl">Profesor/a</label><input type="text" id="subProf" class="fi"></div>
+    <div class="fg"><label class="fl">Día y horario</label><input type="text" id="subHorario" class="fi" placeholder="Ej: Lunes 18:15 – 19:30"></div>
+    <div class="fg"><label class="fl">Color</label><div class="color-sw" id="colorSw"></div></div>
+    <div class="fg"><label class="fl">Notas</label><textarea id="subNotes" class="fi" rows="2"></textarea></div>
+    <button onclick="saveSubject()" class="btn btn-p" style="margin-top:6px">Guardar materia</button>
+    <button onclick="closeM('subjectModal')" class="btn btn-s">Cancelar</button>
+  </div>
+</div>
+
+<!-- GOAL -->
+<div id="goalModal" class="mo" style="display:none">
+  <div class="m">
+    <div class="mh"></div>
+    <div class="mt">Nuevo objetivo</div>
+    <div class="fg"><input type="text" id="goalInput" class="fi" placeholder="Ej: Leer capítulo 3 de Piaget"></div>
+    <button onclick="saveGoal()" class="btn btn-p">Agregar objetivo</button>
+    <button onclick="closeM('goalModal')" class="btn btn-s">Cancelar</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminModal" class="mo" style="display:none">
+  <div class="m">
+    <div class="mh"></div>
+    <div class="mt">👑 Panel de Admin</div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="sn" id="admUsers">0</div><div class="sl">Usuarios</div></div>
+      <div class="stat-card"><div class="sn" style="color:var(--sage)" id="admEvents">0</div><div class="sl">Eventos</div></div>
+    </div>
+    <div class="card-title" style="margin:14px 0 10px;font-size:15px">Usuarios registrados</div>
+    <div id="adminUserList"></div>
+    <button onclick="closeM('adminModal')" class="btn btn-s">Cerrar</button>
+  </div>
+</div>
+
+</div><!-- /#app -->
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!--  SCRIPT                                                               -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  SUPABASE INIT
+// ═══════════════════════════════════════════════════════════════
+const SUPABASE_URL  = 'https://fjawmrsmtirerssurrgn.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqYXdtcnNtdGlyZXJzc3VycmduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNzE3NjcsImV4cCI6MjA5NTc0Nzc2N30.PoT1A5JkgYksVq1LNeKIjmdAU4GM9_YoouCBMV4jthg';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+let currentUser = null;        // { id, email }
+let currentProfile = null;     // { id, email, full_name, is_admin }
+let isAdmin = false;
+let rtChannel = null;
+
+// ═══════════════════════════════════════════════════════════════
+//  DATOS BASE — horario fijo de Psicopedagogía UE
+// ═══════════════════════════════════════════════════════════════
+const SCHED = [
+  {
+    dia:'Lunes', num:1, libre:false,
+    clases:[
+      {id:'s1', materia:'Psicodiagnóstico',             doc:'Maximiliano Ribero',  hora:'18:15 – 19:30', color:'#6B9E70'},
+      {id:'s2', materia:'Taller de Medios y Recursos',  doc:'Nora Giberti',        hora:'20:00 – 21:30', color:'#5A98C0'},
+    ]
+  },
+  {
+    dia:'Martes', num:2, libre:false,
+    clases:[
+      {id:'s3', materia:'Psicología del Aprendizaje',   doc:'Christian Vodopivec', hora:'18:30 – 19:50', color:'#8B7EC0'},
+      {id:'s4', materia:'Mediación',                    doc:'Fátima Germano',      hora:'20:00 – 21:30', color:'#C8942E'},
+    ]
+  },
+  {dia:'Miércoles', num:3, libre:true, clases:[]},
+  {
+    dia:'Jueves', num:4, libre:false,
+    clases:[
+      {id:'s5', materia:'Problemáticas Socioculturales',doc:'Germán Rincón',       hora:'18:30 – 19:50', color:'#C4714E'},
+      {id:'s6', materia:'Psicología del Desarrollo',    doc:'Carolina Caño',       hora:'19:50 – 20:30', color:'#3A8080'},
+    ]
+  },
+  {
+    dia:'Viernes', num:5, libre:false,
+    clases:[
+      {id:'s7', materia:'Psicología Psicoanalítica',    doc:'Silvia Márquez',      hora:'18:30 – 19:50', color:'#C86878'},
+      {id:'s8', materia:'Prácticas Profesionalizantes 2',doc:'Virginia Steinberg', hora:'20:00 – 21:30', color:'#8B7EC0'},
+    ]
+  },
+];
+const ALL = SCHED.flatMap(d=>d.clases);
+const COLORS = ['#6B9E70','#C4714E','#8B7EC0','#C8942E','#C86878','#5A98C0','#3A8080','#A07840','#7A98B0','#B07060'];
+const EVI = {clase:'🎓',parcial:'📝',entrega:'📄',lectura:'📖',reunion:'🤝',otro:'📌'};
+const HABITS_DEF = ['Repasé apuntes','Leí bibliografía','Hice ejercicios','Organicé el tiempo'];
+const QUOTES = [
+  {t:"El aprendizaje no es un producto de la enseñanza, sino del pensamiento del alumno.",a:"Jean Piaget"},
+  {t:"No hay enseñanza sin investigación ni investigación sin enseñanza.",a:"Paulo Freire"},
+  {t:"La curiosidad es el motor del conocimiento.",a:"Paulo Freire"},
+  {t:"El inconsciente es la política interior del sujeto.",a:"Jacques Lacan"},
+  {t:"El ser humano no sólo tiene el derecho de ser diferente, sino la obligación.",a:"Albert Camus"},
+  {t:"Aprender es descubrir que algo es posible.",a:"Fritz Perls"},
+  {t:"Donde hay vida, hay deseo de aprender.",a:"Lev Vygotsky"},
+  {t:"La educación es el arma más poderosa para cambiar el mundo.",a:"Nelson Mandela"},
+  {t:"Cuanto más reflexionamos sobre algo, más nos preguntamos por qué.",a:"Carl Rogers"},
+  {t:"El hombre está condenado a ser libre.",a:"Jean-Paul Sartre"},
+  {t:"El juego es la forma más elevada de investigación.",a:"Albert Einstein"},
+  {t:"Conocerse a uno mismo es el comienzo de toda sabiduría.",a:"Aristóteles"},
+];
+
+// ═══════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════
+let S = {
+  dark:false, view:'Home', extra:'pom',
+  curMonth:new Date().getMonth(), curYear:new Date().getFullYear(),
+  selDate:null, selColor:'#6B9E70',
+  mood:null,
+  pomType:'foco', pomRunning:false, pomInterval:null, pomSec:25*60, pomSes:0,
+  // SHARED (Supabase):
+  events:[], birthdays:[],
+  // LOCAL per user:
+  extraSubs:[], goals:[], diary:[],
+  habits:{},   // {YYYY-WW: [bool,bool,bool,bool]}
+};
+
+function ds(d){return d.toISOString().split('T')[0]}
+function tod(){return ds(new Date())}
+function weekKey(d){
+  const j=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  j.setUTCDate(j.getUTCDate()+4-(j.getUTCDay()||7));
+  const y=j.getUTCFullYear();
+  const w=Math.ceil(((j-new Date(Date.UTC(y,0,1)))/864e5+1)/7);
+  return y+'-W'+String(w).padStart(2,'0');
+}
+
+// ── PERSIST LOCAL (per user) ──────────────────────────────────
+function localKey(){ return currentUser ? 'psicope_v4_'+currentUser.id : 'psicope_v4_guest'; }
+function loadLocal(){
+  try{
+    const d=JSON.parse(localStorage.getItem(localKey())||'{}');
+    ['extraSubs','goals','diary','mood','dark','pomSes','habits'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
+  }catch(e){}
+  // dark mode también globalmente (para el screen de auth)
+  try{
+    const g=JSON.parse(localStorage.getItem('psicope_global')||'{}');
+    if(g.dark!==undefined && S.dark===false) S.dark=g.dark;
+  }catch(e){}
+}
+function saveLocal(){
+  if(!currentUser) return;
+  try{
+    localStorage.setItem(localKey(),JSON.stringify({
+      extraSubs:S.extraSubs, goals:S.goals, diary:S.diary,
+      mood:S.mood, dark:S.dark, pomSes:S.pomSes, habits:S.habits
+    }));
+    localStorage.setItem('psicope_global',JSON.stringify({dark:S.dark}));
+  }catch(e){}
+}
+// compatibilidad con el nombre histórico
+function save(){ saveLocal(); }
+
+// ═══════════════════════════════════════════════════════════════
+//  AUTH UI
+// ═══════════════════════════════════════════════════════════════
+function setAuthTab(t){
+  document.getElementById('tabLogin').classList.toggle('active', t==='login');
+  document.getElementById('tabReg').classList.toggle('active', t==='reg');
+  document.getElementById('loginForm').style.display = t==='login' ? '' : 'none';
+  document.getElementById('regForm').style.display   = t==='reg'   ? '' : 'none';
+  document.getElementById('loginMsg').className='auth-msg';
+  document.getElementById('regMsg').className='auth-msg';
+}
+
+function togglePw(inputId, btn){
+  const inp = document.getElementById(inputId);
+  if(inp.type === 'password'){ inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁️'; }
+}
+
+function showAuthMsg(elId, msg, ok){
+  const el = document.getElementById(elId);
+  el.textContent = msg;
+  el.className = 'auth-msg ' + (ok?'ok':'err');
+}
+
+async function doRegister(){
+  const name  = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pw    = document.getElementById('regPw').value;
+  const btn   = document.getElementById('regBtn');
+
+  if(!name){ showAuthMsg('regMsg','Ingresá tu nombre',false); return; }
+  if(!email || !email.includes('@')){ showAuthMsg('regMsg','Email inválido',false); return; }
+  if(pw.length < 6){ showAuthMsg('regMsg','La contraseña debe tener al menos 6 caracteres',false); return; }
+
+  btn.disabled = true; btn.textContent='Creando cuenta...';
+  try{
+    const { data, error } = await sb.auth.signUp({
+      email, password: pw,
+      options: { data: { full_name: name } }
+    });
+    if(error){ throw error; }
+
+    // Si Supabase requiere confirmación de email, data.session será null
+    if(!data.session){
+      showAuthMsg('regMsg','¡Cuenta creada! Revisá tu mail para confirmarla y después iniciá sesión.',true);
+      setTimeout(()=>setAuthTab('login'), 2500);
+    } else {
+      // sesión iniciada automáticamente
+      showAuthMsg('regMsg','¡Bienvenido/a!',true);
+      await onSession(data.session);
+    }
+  }catch(e){
+    showAuthMsg('regMsg', e.message || 'Error al registrarse', false);
+  }finally{
+    btn.disabled=false; btn.textContent='Crear cuenta';
+  }
+}
+
+async function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pw    = document.getElementById('loginPw').value;
+  const btn   = document.getElementById('loginBtn');
+  if(!email || !pw){ showAuthMsg('loginMsg','Completá email y contraseña',false); return; }
+
+  btn.disabled=true; btn.textContent='Ingresando...';
+  try{
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+    if(error) throw error;
+    await onSession(data.session);
+  }catch(e){
+    const msg = (e.message||'').includes('Invalid login')
+      ? 'Email o contraseña incorrectos'
+      : (e.message || 'Error al iniciar sesión');
+    showAuthMsg('loginMsg', msg, false);
+  }finally{
+    btn.disabled=false; btn.textContent='Iniciar sesión';
+  }
+}
+
+async function doLogout(){
+  if(!confirm('¿Cerrar sesión?')) return;
+  try{
+    if(rtChannel){ await sb.removeChannel(rtChannel); rtChannel=null; }
+    await sb.auth.signOut();
+  }catch(e){}
+  currentUser=null; currentProfile=null; isAdmin=false;
+  S.events=[]; S.birthdays=[];
+  document.getElementById('app').style.display='none';
+  document.getElementById('authScreen').classList.add('show');
+  // limpiar campos
+  ['loginEmail','loginPw','regName','regEmail','regPw'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  setAuthTab('login');
+}
+
+async function onSession(session){
+  if(!session || !session.user){ return; }
+  currentUser = { id: session.user.id, email: session.user.email };
+
+  // cargar profile (si no existe lo creamos por las dudas, aunque el trigger debería hacerlo)
+  let { data: prof } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+  if(!prof){
+    // intentar crearlo (el trigger pudo no haber corrido)
+    const countRes = await sb.from('profiles').select('id', { count:'exact', head:true });
+    const isFirst = (countRes.count === 0);
+    const fullName = session.user.user_metadata?.full_name || '';
+    const ins = await sb.from('profiles').insert({
+      id: currentUser.id, email: currentUser.email, full_name: fullName, is_admin: isFirst
+    }).select().maybeSingle();
+    prof = ins.data;
+  }
+  currentProfile = prof || { id: currentUser.id, email: currentUser.email, full_name:'', is_admin:false };
+  isAdmin = !!currentProfile.is_admin;
+
+  // mostrar app
+  document.getElementById('authScreen').classList.remove('show');
+  document.getElementById('app').style.display='';
+  document.getElementById('adminPill').style.display = isAdmin ? '' : 'none';
+
+  // cargar estado local del usuario
+  loadLocal();
+  if(S.dark){document.body.classList.add('dark');document.getElementById('darkBtn').textContent='☀️';}
+  else{document.body.classList.remove('dark');document.getElementById('darkBtn').textContent='🌙';}
+  document.getElementById('pomSesEl').textContent='Sesiones completadas: '+S.pomSes;
+
+  // cargar datos compartidos
+  await loadEvents();
+  await loadBirthdays();
+
+  // suscripción realtime
+  setupRealtime();
+
+  // render inicial
+  renderHome();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SUPABASE DATA — events + birthdays
+// ═══════════════════════════════════════════════════════════════
+async function loadEvents(){
+  const { data, error } = await sb.from('events').select('*').order('date',{ascending:true});
+  if(error){ console.warn('loadEvents',error); return; }
+  S.events = (data||[]).map(r=>({
+    id: r.id, title: r.title, date: r.date,
+    time: r.time||'', subjectId: r.subject_id||'',
+    type: r.type||'otro', notes: r.notes||'',
+    created_by: r.created_by, creator_email: r.creator_email||''
+  }));
+}
+
+async function loadBirthdays(){
+  const { data, error } = await sb.from('birthdays').select('*').order('date',{ascending:true});
+  if(error){ console.warn('loadBirthdays',error); return; }
+  S.birthdays = (data||[]).map(r=>({
+    id: r.id, name: r.name, date: r.date,
+    created_by: r.created_by, creator_email: r.creator_email||''
+  }));
+}
+
+function setupRealtime(){
+  try{
+    if(rtChannel){ sb.removeChannel(rtChannel); }
+    rtChannel = sb.channel('agenda-shared')
+      .on('postgres_changes', { event:'*', schema:'public', table:'events' }, async ()=>{
+        await loadEvents();
+        if(S.view==='Home') renderHome();
+        if(S.view==='Extras' && S.extra==='cal') renderCal();
+      })
+      .on('postgres_changes', { event:'*', schema:'public', table:'birthdays' }, async ()=>{
+        await loadBirthdays();
+        if(S.view==='Home') renderHome();
+        if(S.view==='Extras' && S.extra==='cumple') renderBdays();
+        if(S.view==='Extras' && S.extra==='cal') renderCal();
+      })
+      .subscribe();
+  }catch(e){ console.warn('realtime',e); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+function showView(v){
+  S.view=v;
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  document.getElementById('v'+v).classList.add('active');
+  document.getElementById('nav'+v).classList.add('active');
+  const renders={Home:renderHome,Horario:renderHorario,Materias:renderMaterias,Extras:renderExtras};
+  if(renders[v])renders[v]();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  HOME
+// ═══════════════════════════════════════════════════════════════
+function renderHome(){
+  const now=new Date(), h=now.getHours(), dow=now.getDay();
+  const firstName = (currentProfile?.full_name||'').split(' ')[0];
+  const greetBase = h<12?'¡Buenos días':h<18?'¡Buenas tardes':'¡Buenas noches';
+  const emoji     = h<12?' ☀️':h<18?' 🌤️':' 🌙';
+  document.getElementById('greetEl').textContent = greetBase + (firstName?', '+firstName:'') + '!' + emoji;
+  document.getElementById('dateEl').textContent=now.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});
+  const dHoy=SCHED.find(d=>d.num===dow);
+  const cHoy=dHoy&&!dHoy.libre?dHoy.clases:[];
+  document.getElementById('clasesCountEl').textContent=cHoy.length;
+
+  // ── TODAY ALERT (eventos compartidos de hoy)
+  const todayEv = S.events.filter(e=>e.date===tod());
+  const mm=String(now.getMonth()+1).padStart(2,'0'), dd=String(now.getDate()).padStart(2,'0');
+  const bHoy=S.birthdays.filter(b=>{const d=new Date(b.date+'T00:00');return String(d.getMonth()+1).padStart(2,'0')===mm&&String(d.getDate()).padStart(2,'0')===dd;});
+
+  const taEl = document.getElementById('todayAlertEl');
+  if(todayEv.length || bHoy.length){
+    let html = `<div class="ta-hdr">📌 Hoy en la agenda</div>`;
+    bHoy.forEach(b=>{ html += `<div class="ta-item">🎉 <strong>¡Cumpleaños de ${escapeHtml(b.name)}!</strong></div>`; });
+    todayEv.forEach(e=>{
+      const ic = EVI[e.type]||'📌';
+      html += `<div class="ta-item">${ic} <strong>${escapeHtml(e.title)}</strong>${e.time?' · '+e.time:''}</div>`;
+    });
+    taEl.innerHTML = html;
+    taEl.style.display='block';
+  } else {
+    taEl.style.display='none';
+  }
+
+  // (mantener también la bday-alert clásica oculta — la integramos arriba)
+  document.getElementById('bdayAlertEl').style.display='none';
+
+  // mood
+  if(S.mood)document.querySelectorAll('.mb').forEach(b=>{b.classList.toggle('sel',b.textContent===S.mood);});
+  // quote
+  const q=QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  document.getElementById('quoteEl').textContent='"'+q.t+'"';
+  document.getElementById('authorEl').textContent='— '+q.a;
+  // clases hoy
+  const tEl=document.getElementById('todayEl');
+  if(!cHoy.length){
+    const extra=S.events.filter(e=>e.date===tod());
+    tEl.innerHTML=extra.length?extra.map(evHTML).join(''):'<div style="text-align:center;padding:20px;color:var(--text3);font-size:14px;font-weight:500">Sin clases hoy 🌿 Día libre para repasar.</div>';
+  } else {
+    tEl.innerHTML=cHoy.map(c=>`<div class="ev-item" style="border-left-color:${c.color}">
+      <div class="ev-time">${c.hora.split('–')[0].trim()}</div>
+      <div style="flex:1"><div class="ev-title">${c.materia}</div><div class="ev-meta">👩‍🏫 ${c.doc} &nbsp;·&nbsp; 🕐 ${c.hora}</div></div>
+    </div>`).join('');
+    S.events.filter(e=>e.date===tod()).forEach(e=>{tEl.innerHTML+=evHTML(e);});
+  }
+  // upcoming
+  const up=S.events.filter(e=>e.date>tod()&&(e.type==='parcial'||e.type==='entrega')).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,4);
+  document.getElementById('upcomingEl').innerHTML=up.length?up.map(e=>{
+    const d=new Date(e.date+'T00:00'),diff=Math.ceil((d-new Date())/864e5);
+    const c=ALL.find(x=>x.id===e.subjectId);
+    return`<div class="ev-item" style="border-left-color:var(--terra)">
+      <div class="ev-time" style="color:var(--terra);font-size:12px">${diff}d</div>
+      <div style="flex:1"><div class="ev-title">${EVI[e.type]} ${escapeHtml(e.title)}</div>
+      <div class="ev-meta">${d.toLocaleDateString('es-AR',{day:'numeric',month:'short'})}${c?' · '+c.materia:''}</div></div>
+    </div>`;
+  }).join(''):'<div style="padding:10px 0;color:var(--text3);font-size:13px;text-align:center;font-weight:500">Sin entregas próximas 🎉</div>';
+
+  renderVacaciones();
+  renderGoals();
+  renderHabits();
+}
+
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+function evHTML(e){
+  const c=ALL.find(x=>x.id===e.subjectId)||S.extraSubs.find(x=>x.id===e.subjectId);
+  const byMe = e.created_by===currentUser?.id;
+  const author = e.creator_email && !byMe ? `<div class="ev-author">por ${escapeHtml(e.creator_email.split('@')[0])}</div>` : '';
+  return`<div class="ev-item" style="border-left-color:${c?c.color:'var(--terra)'}">
+    <div class="ev-time">${e.time||'--:--'}</div>
+    <div style="flex:1"><div class="ev-title">${EVI[e.type]||'📌'} ${escapeHtml(e.title)}</div><div class="ev-meta">${c?(c.materia||c.name):''}</div>${author}</div>
+  </div>`;
+}
+function setMood(m,btn){S.mood=m;document.querySelectorAll('.mb').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');saveLocal();}
+
+// ═══════════════════════════════════════════════════════════════
+//  VACACIONES
+// ═══════════════════════════════════════════════════════════════
+function renderVacaciones(){
+  const now = new Date();
+  now.setHours(0,0,0,0);
+  const year = now.getFullYear();
+  const invStart = new Date(year, 6, 20);
+  const invEnd   = new Date(year, 6, 31);
+  const verStart = new Date(year, 11, 23);
+  const verEnd   = new Date(year+1, 1, 28);
+  const verStartAdj = now > verEnd ? new Date(year+1, 11, 23) : verStart;
+  const verEndAdj   = now > verEnd ? new Date(year+2, 1, 28) : verEnd;
+
+  const el = document.getElementById('vacCard');
+  if(!el) return;
+  let html = '';
+  function makeCard(icon, label, name, start, end, colorVar, bgVar, borderVar){
+    const today = new Date(); today.setHours(0,0,0,0);
+    const isActive = today >= start && today <= end;
+    const isPast   = today > end;
+    if(isPast) return '';
+    const diffDays = Math.ceil((start - today) / 864e5);
+    const totalDays = Math.ceil((end - start) / 864e5) + 1;
+    let statusLabel, diasNum, diasLbl, progPct = 0;
+    if(isActive){
+      const diasRestantes = Math.ceil((end - today) / 864e5) + 1;
+      const diasTranscurridos = Math.ceil((today - start) / 864e5);
+      progPct = Math.round((diasTranscurridos / totalDays) * 100);
+      diasNum = diasRestantes; diasLbl = 'días restantes'; statusLabel = '🎉 ¡AHORA!';
+    } else {
+      diasNum = diffDays; diasLbl = diffDays === 1 ? 'día falta' : 'días faltan';
+      progPct = 0; statusLabel = label;
+    }
+    const startFmt = start.toLocaleDateString('es-AR',{day:'numeric',month:'long'});
+    const endFmt   = end.toLocaleDateString('es-AR',{day:'numeric',month:'long'});
+    return `<div class="vac-card" style="background:var(${bgVar});border-color:var(${borderVar})">
+      <div class="vac-icon">${icon}</div>
+      <div class="vac-info">
+        <div class="vac-label" style="color:var(${colorVar})">${statusLabel}</div>
+        <div class="vac-name">${name}</div>
+        <div class="vac-dates" style="color:var(--text3)">${startFmt} – ${endFmt} &nbsp;·&nbsp; ${totalDays} días</div>
+        ${isActive ? `<div class="vac-prog-bar"><div class="vac-prog-fill" style="width:${progPct}%;background:var(${colorVar})"></div></div>` : ''}
+      </div>
+      <div class="vac-count-wrap">
+        <div class="vac-num" style="color:var(${colorVar})">${diasNum}</div>
+        <div class="vac-dias" style="color:var(--text3)">${diasLbl}</div>
+      </div>
+    </div>`;
+  }
+  html += makeCard('❄️','PRÓXIMO RECESO','Vacaciones de invierno', invStart, invEnd,'--sky','--sky-l','--sky');
+  html += makeCard('🏖️','PRÓXIMO RECESO','Vacaciones de verano', verStartAdj, verEndAdj,'--gold','--gold-l','--gold');
+  el.innerHTML = html;
+}
+
+function renderHabits(){
+  const wk=weekKey(new Date());
+  if(!S.habits[wk])S.habits[wk]=HABITS_DEF.map(()=>false);
+  const done=S.habits[wk].filter(Boolean).length;
+  document.getElementById('habWeekLbl').textContent=done+'/'+HABITS_DEF.length+' esta semana';
+  document.getElementById('habitsEl').innerHTML=HABITS_DEF.map((h,i)=>`
+    <div class="hab-row">
+      <span style="font-size:13px;color:var(--text);font-weight:500;flex:1">${h}</span>
+      <div class="hab-dots">
+        <div class="hd${S.habits[wk][i]?' done':''}" onclick="toggleHab(${i},'${wk}')"></div>
+      </div>
+    </div>`).join('');
+}
+function toggleHab(i,wk){S.habits[wk][i]=!S.habits[wk][i];saveLocal();renderHabits();}
+
+// ═══════════════════════════════════════════════════════════════
+//  HORARIO
+// ═══════════════════════════════════════════════════════════════
+function renderHorario(){
+  const dow=new Date().getDay();
+  document.getElementById('horarioEl').innerHTML=SCHED.map(dia=>`
+    <div class="dia-block">
+      <div class="dia-hdr">
+        ${dia.num===dow?'<span class="hoy-pill">HOY</span>':''}
+        <span class="dia-name">${dia.dia}</span>
+      </div>
+      ${dia.libre
+        ?'<div class="libre-box">🌿 Día libre — sin clases</div>'
+        :dia.clases.map(c=>`<div class="clase-card" onclick="showDetail('${c.id}')">
+          <div class="clase-bar" style="background:${c.color}"></div>
+          <div class="clase-body">
+            <div class="clase-hora">${c.hora}</div>
+            <div class="clase-mat">${c.materia}</div>
+            <div class="clase-doc">👩‍🏫 ${c.doc}</div>
+          </div>
+          <div class="clase-arrow">›</div>
+        </div>`).join('')
+      }
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  MATERIAS
+// ═══════════════════════════════════════════════════════════════
+function renderMaterias(){
+  const statEl=document.querySelectorAll('.sn');
+  const total=8+S.extraSubs.length;
+  statEl[0].textContent=total;statEl[1].textContent=total;
+
+  let html='';
+  ['Lunes','Martes','Jueves','Viernes'].forEach(dname=>{
+    const dia=SCHED.find(d=>d.dia===dname);
+    if(!dia||dia.libre)return;
+    html+=`<div class="section-lbl">${dname}</div>`;
+    dia.clases.forEach(c=>{
+      const evCount=S.events.filter(e=>e.subjectId===c.id).length;
+      html+=`<div class="mat-card" onclick="showDetail('${c.id}')">
+        <div class="mat-bar" style="background:${c.color}"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div class="mat-name">${c.materia}</div>
+            <div class="mat-meta">👩‍🏫 ${c.doc}&nbsp;&nbsp;🕐 ${c.hora}</div>
+          </div>
+          ${evCount>0?`<span class="badge" style="background:${c.color}22;color:${c.color}">${evCount} ev.</span>`:''}
+        </div>
+        ${c.notes?`<div class="mat-notes">${c.notes}</div>`:''}
+      </div>`;
+    });
+  });
+  if(S.extraSubs.length){
+    html+=`<div class="section-lbl">Otras materias</div>`;
+    S.extraSubs.forEach(s=>{
+      html+=`<div class="mat-card" onclick="showExtraDetail('${s.id}')">
+        <div class="mat-bar" style="background:${s.color}"></div>
+        <div class="mat-name">${s.name}</div>
+        <div class="mat-meta">${s.prof?'👩‍🏫 '+s.prof+' ':''}${s.horario?'🕐 '+s.horario:''}</div>
+        ${s.notes?`<div class="mat-notes">${s.notes}</div>`:''}
+      </div>`;
+    });
+  }
+  document.getElementById('materiasEl').innerHTML=html;
+}
+
+function showDetail(sid){
+  const c=ALL.find(x=>x.id===sid);if(!c)return;
+  const evs=S.events.filter(e=>e.subjectId===sid).sort((a,b)=>a.date.localeCompare(b.date));
+  document.getElementById('detailContent').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <div style="width:14px;height:14px;border-radius:50%;background:${c.color}"></div>
+      <div class="mt" style="margin:0">${c.materia}</div>
+    </div>
+    <div style="background:var(--bg2);border-radius:var(--r-sm);padding:14px;margin-bottom:16px">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:5px;font-weight:500">👩‍🏫 ${c.doc}</div>
+      <div style="font-size:13px;color:var(--text2);font-weight:500">🕐 ${c.hora}</div>
+    </div>
+    <div class="fg">
+      <label class="fl">Notas y bibliografía (privadas)</label>
+      <textarea id="notesTa" class="fi" rows="3" placeholder="Bibliografía, trabajos finales, recordatorios...">${c.notes||''}</textarea>
+      <button onclick="saveNotes('${sid}')" style="margin-top:7px;background:var(--sage);color:#fff;border:none;padding:8px 16px;border-radius:var(--r-sm);cursor:pointer;font-size:12px;font-family:var(--fb);font-weight:700" id="saveNoteBtn">Guardar notas</button>
+    </div>
+    <div style="font-family:var(--fd);font-size:16px;margin:14px 0 10px">Eventos registrados</div>
+    ${evs.length?evs.slice(0,8).map(e=>`<div class="ev-item" style="border-left-color:${c.color}">
+      <div class="ev-time">${e.date.slice(8)}/${e.date.slice(5,7)}</div>
+      <div style="flex:1"><div class="ev-title">${EVI[e.type]} ${escapeHtml(e.title)}</div>${e.notes?`<div class="ev-meta">${escapeHtml(e.notes)}</div>`:''}${e.creator_email && e.created_by!==currentUser?.id?`<div class="ev-author">por ${escapeHtml(e.creator_email.split('@')[0])}</div>`:''}</div>
+      ${canDeleteEvent(e)?`<button onclick="delEv('${e.id}');showDetail('${sid}')" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;padding:0 4px">×</button>`:''}
+    </div>`).join(''):'<div style="color:var(--text3);font-size:13px;text-align:center;padding:14px;font-weight:500">Sin eventos registrados aún</div>'}
+  `;
+  document.getElementById('detailModal').style.display='flex';
+}
+function saveNotes(sid){
+  const c=ALL.find(x=>x.id===sid);if(c){c.notes=document.getElementById('notesTa').value;saveLocal();}
+  const b=document.getElementById('saveNoteBtn');if(b){b.textContent='✓ Guardado';setTimeout(()=>{if(b)b.textContent='Guardar notas';},1500);}
+}
+function showExtraDetail(id){
+  const s=S.extraSubs.find(x=>x.id===id);if(!s)return;
+  const evs=S.events.filter(e=>e.subjectId===id);
+  document.getElementById('detailContent').innerHTML=`
+    <div class="mt">${escapeHtml(s.name)}</div>
+    <div style="background:var(--bg2);border-radius:var(--r-sm);padding:12px;margin-bottom:14px;font-size:13px;color:var(--text2);font-weight:500">
+      ${s.prof?'👩‍🏫 '+escapeHtml(s.prof)+'<br>':''}${s.horario?'🕐 '+escapeHtml(s.horario):''}
+    </div>
+    ${evs.map(e=>`<div class="ev-item" style="border-left-color:${s.color}">
+      <div class="ev-time">${e.date.slice(8)}/${e.date.slice(5,7)}</div>
+      <div class="ev-title">${EVI[e.type]} ${escapeHtml(e.title)}</div>
+      ${canDeleteEvent(e)?`<button onclick="delEv('${e.id}');showExtraDetail('${id}')" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px">×</button>`:''}
+    </div>`).join('')}
+    <button onclick="delExtraSub('${id}')" style="margin-top:10px;width:100%;background:var(--terra-l);color:var(--terra-d);border:1px solid var(--terra);padding:11px;border-radius:var(--r-sm);cursor:pointer;font-size:13px;font-family:var(--fb);font-weight:700">Eliminar materia</button>
+  `;
+  document.getElementById('detailModal').style.display='flex';
+}
+function delExtraSub(id){
+  S.extraSubs=S.extraSubs.filter(x=>x.id!==id);
+  saveLocal();closeM('detailModal');renderMaterias();
+}
+function showAddSubject(){
+  document.getElementById('subjectModal').style.display='flex';
+  document.getElementById('colorSw').innerHTML=COLORS.map(c=>`<div class="sw${S.selColor===c?' sel':''}" style="background:${c}" onclick="pickColor('${c}',this)"></div>`).join('');
+}
+function pickColor(c,el){S.selColor=c;document.querySelectorAll('.sw').forEach(s=>s.classList.remove('sel'));el.classList.add('sel');}
+function saveSubject(){
+  const name=document.getElementById('subName').value.trim();if(!name)return;
+  S.extraSubs.push({id:Date.now()+'',name,prof:document.getElementById('subProf').value,horario:document.getElementById('subHorario').value,color:S.selColor,notes:document.getElementById('subNotes').value});
+  saveLocal();closeM('subjectModal');['subName','subProf','subHorario','subNotes'].forEach(id=>{document.getElementById(id).value='';});renderMaterias();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  EVENTS — ahora en Supabase (compartidos)
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('addBtn').onclick=()=>{
+  document.getElementById('evDate').value=tod();
+  const sel=document.getElementById('evSubject');
+  sel.innerHTML='<option value="">Sin materia</option>';
+  ALL.forEach(c=>{sel.innerHTML+=`<option value="${c.id}">${c.materia}</option>`;});
+  S.extraSubs.forEach(s=>{sel.innerHTML+=`<option value="${s.id}">${escapeHtml(s.name)}</option>`;});
+  document.getElementById('addModal').style.display='flex';
+};
+function openEvForDate(d){
+  document.getElementById('evDate').value=d;
+  const sel=document.getElementById('evSubject');sel.innerHTML='<option value="">Sin materia</option>';
+  ALL.forEach(c=>{sel.innerHTML+=`<option value="${c.id}">${c.materia}</option>`;});
+  S.extraSubs.forEach(s=>{sel.innerHTML+=`<option value="${s.id}">${escapeHtml(s.name)}</option>`;});
+  document.getElementById('addModal').style.display='flex';
+}
+async function saveEvent(){
+  const title=document.getElementById('evTitle').value.trim(),date=document.getElementById('evDate').value;
+  if(!title||!date){alert('Completá título y fecha');return;}
+  const btn = document.getElementById('saveEvBtn');
+  btn.disabled=true; btn.textContent='Guardando...';
+  const payload = {
+    title, date,
+    time: document.getElementById('evTime').value || null,
+    subject_id: document.getElementById('evSubject').value || null,
+    type: document.getElementById('evType').value,
+    notes: document.getElementById('evNotes').value || null,
+    created_by: currentUser.id,
+    creator_email: currentUser.email
+  };
+  const { data, error } = await sb.from('events').insert(payload).select().single();
+  btn.disabled=false; btn.textContent='Guardar evento';
+  if(error){ alert('No se pudo guardar el evento: '+error.message); return; }
+  // optimistic: agregamos a S.events (dedup por si el realtime llegó antes)
+  if(!S.events.find(x=>x.id===data.id)){
+    S.events.push({
+      id:data.id, title:data.title, date:data.date, time:data.time||'',
+      subjectId:data.subject_id||'', type:data.type||'otro', notes:data.notes||'',
+      created_by:data.created_by, creator_email:data.creator_email||''
+    });
+  }
+  closeM('addModal');
+  document.getElementById('evTitle').value='';
+  document.getElementById('evNotes').value='';
+  document.getElementById('evTime').value='';
+  if(S.view==='Home')renderHome();
+  if(S.view==='Extras'&&S.extra==='cal')renderCal();
+}
+function canDeleteEvent(e){ return isAdmin || e.created_by===currentUser?.id; }
+async function delEv(id){
+  const ev = S.events.find(e=>e.id===id);
+  if(!ev) return;
+  if(!canDeleteEvent(ev)){ alert('Solo el creador o un admin puede eliminar este evento'); return; }
+  if(!confirm('¿Eliminar este evento? Se elimina para todos.')) return;
+  const { error } = await sb.from('events').delete().eq('id', id);
+  if(error){ alert('No se pudo eliminar: '+error.message); return; }
+  S.events = S.events.filter(e=>e.id!==id);
+  if(S.view==='Home')renderHome();
+  if(S.view==='Extras'&&S.extra==='cal')renderCal();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  GOALS (locales)
+// ═══════════════════════════════════════════════════════════════
+function renderGoals(){
+  const el=document.getElementById('goalsEl');
+  if(!S.goals.length){el.innerHTML='<div style="text-align:center;padding:10px;color:var(--text3);font-size:13px;font-weight:500">Sin objetivos esta semana</div>';return;}
+  el.innerHTML=S.goals.map(g=>`<div class="goal-item" onclick="toggleGoal('${g.id}')">
+    <div class="gc${g.done?' done':''}">${g.done?'<span style="color:#fff;font-size:12px;font-weight:700">✓</span>':''}</div>
+    <div class="gt${g.done?' done':''}">${escapeHtml(g.text)}</div>
+    <button onclick="event.stopPropagation();delGoal('${g.id}')" style="background:none;border:none;cursor:pointer;color:var(--text4);font-size:20px;padding:2px 4px">×</button>
+  </div>`).join('');
+}
+function addGoal(){document.getElementById('goalModal').style.display='flex';}
+function saveGoal(){const t=document.getElementById('goalInput').value.trim();if(!t)return;S.goals.push({id:Date.now()+'',text:t,done:false});saveLocal();closeM('goalModal');document.getElementById('goalInput').value='';renderGoals();}
+function toggleGoal(id){const g=S.goals.find(x=>x.id===id);if(g){g.done=!g.done;saveLocal();renderGoals();}}
+function delGoal(id){S.goals=S.goals.filter(g=>g.id!==id);saveLocal();renderGoals();}
+
+// ═══════════════════════════════════════════════════════════════
+//  EXTRAS
+// ═══════════════════════════════════════════════════════════════
+function renderExtras(){setExtra(S.extra);renderDiary();renderBdays();renderAccount();}
+function setExtra(v){
+  S.extra=v;
+  ['pom','cal','diario','cumple','cuenta'].forEach(x=>{const el=document.getElementById('ex'+x.charAt(0).toUpperCase()+x.slice(1));if(el)el.style.display=x===v?'':'none';});
+  for(let i=1;i<=5;i++){const el=document.getElementById('xt'+i);if(el)el.classList.remove('active');}
+  document.getElementById('xt'+{pom:1,cal:2,diario:3,cumple:4,cuenta:5}[v]).classList.add('active');
+  if(v==='cal')renderCal();
+  if(v==='cuenta')renderAccount();
+}
+
+// ── POMODORO ──────────────────────────────────────────────────
+const PT={foco:25*60,corto:5*60,largo:15*60};
+const PL={foco:'TIEMPO DE FOCO',corto:'DESCANSO CORTO',largo:'DESCANSO LARGO'};
+function setPomT(t){if(S.pomRunning)resetPom();S.pomType=t;S.pomSec=PT[t];['foco','corto','largo'].forEach((x,i)=>document.getElementById('pm'+(i+1)).classList.toggle('active',x===t));document.getElementById('pomLblEl').textContent=PL[t];updatePomUI();}
+function togglePom(){
+  if(S.pomRunning){clearInterval(S.pomInterval);S.pomRunning=false;document.getElementById('pomBtn').textContent='▶ Continuar';}
+  else{S.pomRunning=true;document.getElementById('pomBtn').textContent='⏸ Pausar';
+    S.pomInterval=setInterval(()=>{
+      S.pomSec--;updatePomUI();
+      if(S.pomSec<=0){
+        clearInterval(S.pomInterval);S.pomRunning=false;
+        if(S.pomType==='foco'){S.pomSes++;saveLocal();}
+        document.getElementById('pomSesEl').textContent='Sesiones completadas: '+S.pomSes;
+        document.getElementById('pomBtn').textContent='▶ Iniciar';
+        alert(S.pomType==='foco'?'¡Sesión completada! Tomá un descanso 🌿':'¡Descanso terminado! A estudiar 📚');
+        resetPom();
+      }
+    },1000);
+  }
+}
+function resetPom(){clearInterval(S.pomInterval);S.pomRunning=false;S.pomSec=PT[S.pomType];document.getElementById('pomBtn').textContent='▶ Iniciar';updatePomUI();}
+function updatePomUI(){
+  const m=Math.floor(S.pomSec/60),s=S.pomSec%60;
+  document.getElementById('pomTimeEl').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  document.getElementById('pomRing').setAttribute('stroke-dashoffset',502*(1-S.pomSec/PT[S.pomType]));
+}
+
+// ── CALENDAR ─────────────────────────────────────────────────
+function prevMonth(){S.curMonth--;if(S.curMonth<0){S.curMonth=11;S.curYear--;}renderCal();}
+function nextMonth(){S.curMonth++;if(S.curMonth>11){S.curMonth=0;S.curYear++;}renderCal();}
+function renderCal(){
+  const months=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('calMonthEl').textContent=months[S.curMonth]+' '+S.curYear;
+  const grid=document.getElementById('calGrid'),t=tod();
+  grid.innerHTML=['D','L','M','M','J','V','S'].map(d=>`<div class="cal-dl">${d}</div>`).join('');
+  const first=new Date(S.curYear,S.curMonth,1),last=new Date(S.curYear,S.curMonth+1,0);
+  for(let i=0;i<first.getDay();i++){const pd=new Date(S.curYear,S.curMonth,1-first.getDay()+i);grid.innerHTML+=`<div class="cal-day om">${pd.getDate()}</div>`;}
+  for(let d=1;d<=last.getDate();d++){
+    const dstr=ds(new Date(S.curYear,S.curMonth,d)),isT=dstr===t,isSel=dstr===S.selDate;
+    const md = dstr.slice(5); // MM-DD
+    const hasEv = S.events.some(e=>e.date===dstr);
+    const hasBday = S.birthdays.some(b=> (b.date||'').slice(5)===md );
+    let cls='cal-day';if(isT)cls+=' today';else if(isSel)cls+=' sel';
+    let dotsHtml = '';
+    if(hasEv || hasBday){
+      dotsHtml='<div class="cal-dots">';
+      if(hasEv) dotsHtml += `<div class="cal-dot" style="position:relative;bottom:auto;background:${isT?'#fff':'var(--sage)'}"></div>`;
+      if(hasBday) dotsHtml += `<div class="cal-dot" style="position:relative;bottom:auto;background:${isT?'#fff':'var(--rose)'}"></div>`;
+      dotsHtml += '</div>';
+    }
+    grid.innerHTML+=`<div class="${cls}" onclick="selDay('${dstr}')">${d}${dotsHtml}</div>`;
+  }
+  if(S.selDate)renderSelDay();
+}
+function selDay(d){S.selDate=d;renderCal();}
+function renderSelDay(){
+  const md = S.selDate.slice(5);
+  const evs=S.events.filter(e=>e.date===S.selDate).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  const bdays=S.birthdays.filter(b=>(b.date||'').slice(5)===md);
+  const d=new Date(S.selDate+'T00:00');
+  let html=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <div style="font-family:var(--fd);font-size:15px">${d.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'})}</div>
+    <button onclick="openEvForDate('${S.selDate}')" style="background:var(--sage);color:#fff;border:none;padding:7px 13px;border-radius:var(--r-sm);cursor:pointer;font-size:12px;font-family:var(--fb);font-weight:700">+ Evento</button>
+  </div>`;
+
+  // Cumpleaños primero
+  bdays.forEach(b=>{
+    const owner = b.created_by===currentUser?.id;
+    html += `<div class="ev-item" style="border-left-color:var(--rose);background:var(--rose-l)">
+      <div class="ev-time">🎂</div>
+      <div style="flex:1"><div class="ev-title">${escapeHtml(b.name)} cumple años</div>${b.creator_email && !owner?`<div class="ev-author">cargado por ${escapeHtml(b.creator_email.split('@')[0])}</div>`:''}</div>
+      ${canDeleteBday(b)?`<button onclick="delBday('${b.id}')" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;padding:0 4px">×</button>`:''}
+    </div>`;
+  });
+
+  if(!evs.length && !bdays.length){
+    html+='<div style="text-align:center;padding:14px;color:var(--text3);font-size:13px;font-weight:500">Sin eventos para este día</div>';
+  } else evs.forEach(e=>{
+    const c=ALL.find(x=>x.id===e.subjectId)||S.extraSubs.find(x=>x.id===e.subjectId);
+    const owner = e.created_by===currentUser?.id;
+    html+=`<div class="ev-item" style="border-left-color:${c?c.color:'var(--sage)'}">
+      <div class="ev-time">${e.time||'--:--'}</div>
+      <div style="flex:1"><div class="ev-title">${EVI[e.type]} ${escapeHtml(e.title)}</div><div class="ev-meta">${c?(c.materia||c.name):''}</div>${e.creator_email && !owner?`<div class="ev-author">por ${escapeHtml(e.creator_email.split('@')[0])}</div>`:''}</div>
+      ${canDeleteEvent(e)?`<button onclick="delEv('${e.id}');renderCal()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;padding:0 4px">×</button>`:''}
+    </div>`;
+  });
+  document.getElementById('selDayEl').innerHTML=html;
+}
+
+// ── DIARY ────────────────────────────────────────────────────
+function saveDiary(){
+  const txt=document.getElementById('diaryInput').value.trim();if(!txt)return;
+  S.diary.unshift({id:Date.now()+'',date:tod(),text:txt,mood:S.mood||'🙂'});
+  if(S.diary.length>50)S.diary=S.diary.slice(0,50);
+  saveLocal();document.getElementById('diaryInput').value='';renderDiary();
+}
+function renderDiary(){
+  const el=document.getElementById('diaryListEl');
+  el.innerHTML=S.diary.length?S.diary.slice(0,15).map(e=>`<div class="diary-entry">
+    <div class="de-date">${e.mood} ${new Date(e.date+'T00:00').toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'})}</div>
+    <div class="de-text">${escapeHtml(e.text)}</div>
+  </div>`).join(''):'<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;font-weight:500">Tu diario académico está vacío 📖</div>';
+}
+
+// ── BIRTHDAYS (Supabase, con dedupe) ─────────────────────────
+async function addBday(){
+  const name=document.getElementById('bdayName').value.trim(),date=document.getElementById('bdayDate').value;
+  const msgEl = document.getElementById('bdayMsg');
+  msgEl.className='auth-msg';
+  if(!name||!date){ showAuthMsg('bdayMsg','Completá nombre y fecha',false); return; }
+
+  const payload = {
+    name, date,
+    created_by: currentUser.id,
+    creator_email: currentUser.email
+  };
+  const { data, error } = await sb.from('birthdays').insert(payload).select().single();
+
+  if(error){
+    // 23505 = unique violation → ya existe ese cumple en la agenda global
+    if(error.code === '23505' || (error.message||'').toLowerCase().includes('duplicate')){
+      showAuthMsg('bdayMsg','Ese cumpleaños ya está en la agenda compartida — no se duplica ✨', true);
+      document.getElementById('bdayName').value='';
+      document.getElementById('bdayDate').value='';
+      // refrescamos por si no lo tenemos local
+      await loadBirthdays(); renderBdays();
+    } else {
+      showAuthMsg('bdayMsg','No se pudo guardar: '+error.message, false);
+    }
+    return;
+  }
+
+  if(!S.birthdays.find(x=>x.id===data.id)){
+    S.birthdays.push({
+      id:data.id, name:data.name, date:data.date,
+      created_by:data.created_by, creator_email:data.creator_email||''
+    });
+  }
+  document.getElementById('bdayName').value='';
+  document.getElementById('bdayDate').value='';
+  showAuthMsg('bdayMsg','¡Cumple agregado a la agenda compartida! 🎉', true);
+  setTimeout(()=>{ msgEl.className='auth-msg'; }, 2500);
+  renderBdays();
+  if(S.view==='Extras'&&S.extra==='cal')renderCal();
+}
+
+function renderBdays(){
+  const el=document.getElementById('bdayListEl');
+  if(!S.birthdays.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;font-weight:500">Agregá los cumpleaños de tus compañeros 🎂</div>';return;}
+  const now=new Date();
+  const sorted=[...S.birthdays].sort((a,b)=>{
+    const da=new Date(a.date+'T00:00'),db=new Date(b.date+'T00:00');
+    const na=new Date(now.getFullYear(),da.getMonth(),da.getDate());
+    const nb=new Date(now.getFullYear(),db.getMonth(),db.getDate());
+    if(na<now)na.setFullYear(now.getFullYear()+1);if(nb<now)nb.setFullYear(now.getFullYear()+1);
+    return na-nb;
+  });
+  el.innerHTML=sorted.map(b=>{
+    const d=new Date(b.date+'T00:00'),ini=b.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const next=new Date(now.getFullYear(),d.getMonth(),d.getDate());if(next<now)next.setFullYear(now.getFullYear()+1);
+    const diff=Math.ceil((next-new Date(now.toDateString()))/864e5);
+    const isT=diff===0;
+    const owner=b.created_by===currentUser?.id;
+    return`<div class="bday-card" style="${isT?'background:var(--rose-l);border-color:var(--rose)':''}">
+      <div class="bday-av">${escapeHtml(ini)}</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700;color:var(--text)">${escapeHtml(b.name)}${isT?' 🎉':''}</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:2px;font-weight:500">${d.toLocaleDateString('es-AR',{day:'numeric',month:'long'})} · ${isT?'¡Hoy!':diff+' días'}</div>
+        ${b.creator_email && !owner?`<div class="bday-author">cargado por ${escapeHtml(b.creator_email.split('@')[0])}</div>`:''}
+      </div>
+      ${canDeleteBday(b)?`<button onclick="delBday('${b.id}')" style="background:none;border:none;cursor:pointer;color:var(--text4);font-size:20px;padding:0 4px">×</button>`:''}
+    </div>`;
+  }).join('');
+}
+function canDeleteBday(b){ return isAdmin || b.created_by===currentUser?.id; }
+async function delBday(id){
+  const b = S.birthdays.find(x=>x.id===id);
+  if(!b) return;
+  if(!canDeleteBday(b)){ alert('Solo quien cargó el cumple o un admin puede eliminarlo'); return; }
+  if(!confirm('¿Eliminar este cumpleaños de la agenda compartida?')) return;
+  const { error } = await sb.from('birthdays').delete().eq('id', id);
+  if(error){ alert('No se pudo eliminar: '+error.message); return; }
+  S.birthdays = S.birthdays.filter(x=>x.id!==id);
+  renderBdays();
+  if(S.view==='Extras'&&S.extra==='cal')renderCal();
+  if(S.view==='Home')renderHome();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CUENTA + ADMIN
+// ═══════════════════════════════════════════════════════════════
+function renderAccount(){
+  if(!currentProfile) return;
+  const name = currentProfile.full_name || currentProfile.email.split('@')[0];
+  document.getElementById('acctName').textContent = name;
+  document.getElementById('acctMail').textContent = currentProfile.email;
+  document.getElementById('acctAv').textContent = (name[0]||'U').toUpperCase();
+  document.getElementById('acctAdminBox').style.display = isAdmin ? '' : 'none';
+}
+
+async function showAdminPanel(){
+  if(!isAdmin) return;
+  // cargar usuarios
+  const { data: users } = await sb.from('profiles').select('*').order('created_at',{ascending:true});
+  document.getElementById('admUsers').textContent = (users||[]).length;
+  document.getElementById('admEvents').textContent = S.events.length;
+  const html = (users||[]).map(u=>{
+    const ini = ((u.full_name||u.email||'?')[0]||'?').toUpperCase();
+    const isMe = u.id === currentUser.id;
+    return `<div class="admin-user-row">
+      <div class="uav">${escapeHtml(ini)}</div>
+      <div class="uinfo">
+        <div class="uname">${escapeHtml(u.full_name||'(sin nombre)')}${isMe?' · vos':''}</div>
+        <div class="umail">${escapeHtml(u.email)}</div>
+      </div>
+      <button class="ubtn ${u.is_admin?'is-admin':''}" onclick="toggleAdmin('${u.id}', ${u.is_admin?'false':'true'})">${u.is_admin?'👑 Admin':'Hacer admin'}</button>
+    </div>`;
+  }).join('');
+  document.getElementById('adminUserList').innerHTML = html || '<div style="text-align:center;padding:14px;color:var(--text3)">Sin usuarios</div>';
+  document.getElementById('adminModal').style.display='flex';
+}
+
+async function toggleAdmin(uid, makeAdmin){
+  if(!isAdmin) return;
+  if(uid === currentUser.id && !makeAdmin){
+    if(!confirm('¿Quitarte el rol de admin? Vas a perder los permisos.')) return;
+  }
+  const { error } = await sb.from('profiles').update({ is_admin: makeAdmin }).eq('id', uid);
+  if(error){ alert('No se pudo actualizar: '+error.message); return; }
+  if(uid === currentUser.id){
+    isAdmin = makeAdmin;
+    currentProfile.is_admin = makeAdmin;
+    document.getElementById('adminPill').style.display = isAdmin ? '' : 'none';
+    renderAccount();
+  }
+  showAdminPanel();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  DARK MODE
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('darkBtn').onclick=function(){
+  S.dark=!S.dark;document.body.classList.toggle('dark',S.dark);
+  this.textContent=S.dark?'☀️':'🌙';saveLocal();
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  MODALS
+// ═══════════════════════════════════════════════════════════════
+function closeM(id){document.getElementById(id).style.display='none';}
+document.querySelectorAll('.mo').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.style.display='none';});});
+
+// Enter key en login/registro
+document.getElementById('loginPw').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('regPw').addEventListener('keydown',   e=>{ if(e.key==='Enter') doRegister(); });
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════════
+(async function init(){
+  // dark global apenas arranca (para que el screen de auth se vea bien)
+  try{
+    const g = JSON.parse(localStorage.getItem('psicope_global')||'{}');
+    if(g.dark){ document.body.classList.add('dark'); document.getElementById('darkBtn').textContent='☀️'; }
+  }catch(e){}
+
+  document.getElementById('app').style.display='none';
+
+  // ¿hay sesión activa?
+  const { data: { session } } = await sb.auth.getSession();
+  if(session){
+    await onSession(session);
+  } else {
+    document.getElementById('authScreen').classList.add('show');
+  }
+
+  // escuchar cambios de auth (logout en otra pestaña, etc.)
+  sb.auth.onAuthStateChange((event, sess) => {
+    if(event === 'SIGNED_OUT'){
+      document.getElementById('app').style.display='none';
+      document.getElementById('authScreen').classList.add('show');
+      currentUser=null; currentProfile=null; isAdmin=false;
+    }
+  });
+})();
+</script>
+</body>
+</html>
